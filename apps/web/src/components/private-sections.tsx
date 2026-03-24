@@ -297,6 +297,7 @@ export function AdminSection() {
     title: "",
     organization: "",
     category_slug: "jobs",
+    featured: true,
     deadline_mode: "rolling",
     deadline: "",
     deadline_label: "",
@@ -307,6 +308,7 @@ export function AdminSection() {
     compensation: "",
     opportunity_type: "",
     apply_url: "",
+    image_url_text: "",
   };
   const blankEvent = {
     title: "",
@@ -330,6 +332,11 @@ export function AdminSection() {
   const [testimonialDraft, setTestimonialDraft] = useState<any>(blankTestimonial);
   const [groupDraft, setGroupDraft] = useState<any>(blankGroup);
   const [locationDraft, setLocationDraft] = useState<any>(blankLocation);
+
+  function formatCommand(command: string, value?: string) {
+    if (typeof document === "undefined") return;
+    document.execCommand(command, false, value);
+  }
 
   async function loadAdminData() {
     const [
@@ -581,6 +588,15 @@ export function AdminSection() {
                     <option value="not_specified">Not specified</option>
                   </select>
                 </div>
+                <label className="flex items-center gap-3 rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-sm text-white">
+                  <input
+                    name="featured"
+                    type="checkbox"
+                    checked={Boolean(opportunityDraft.featured)}
+                    onChange={(event) => setOpportunityDraft((current: any) => ({ ...current, featured: event.target.checked }))}
+                  />
+                  Show this opportunity on the homepage
+                </label>
                 {opportunityDraft.deadline_mode === "date" ? (
                   <input
                     name="deadline"
@@ -601,7 +617,34 @@ export function AdminSection() {
                   </label>
                   <textarea name="excerpt" value={opportunityDraft.excerpt} onChange={(event) => setOpportunityDraft((current: any) => ({ ...current, excerpt: event.target.value }))} placeholder="A short, clear preview of the opportunity" required rows={2} className="w-full rounded-3xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white" />
                 </div>
-                <textarea name="description" value={opportunityDraft.description} onChange={(event) => setOpportunityDraft((current: any) => ({ ...current, description: event.target.value }))} placeholder="Description" required rows={5} className="w-full rounded-3xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white" />
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-slate-300">
+                    Full description
+                    <span className="mt-1 block text-xs text-slate-400">Use the tools below for bold, italics, underline, bullets, and larger section headings inside the opportunity description.</span>
+                  </label>
+                  <div className="flex flex-wrap gap-2 rounded-2xl border border-white/10 bg-white/5 p-3">
+                    <button type="button" onClick={() => formatCommand("bold")} className="rounded-xl border border-white/10 bg-white/10 px-3 py-1.5 text-sm font-semibold text-white">B</button>
+                    <button type="button" onClick={() => formatCommand("italic")} className="rounded-xl border border-white/10 bg-white/10 px-3 py-1.5 text-sm italic text-white">I</button>
+                    <button type="button" onClick={() => formatCommand("underline")} className="rounded-xl border border-white/10 bg-white/10 px-3 py-1.5 text-sm underline text-white">U</button>
+                    <button type="button" onClick={() => formatCommand("insertUnorderedList")} className="rounded-xl border border-white/10 bg-white/10 px-3 py-1.5 text-sm text-white">Bullets</button>
+                    <button type="button" onClick={() => formatCommand("formatBlock", "<h3>")} className="rounded-xl border border-white/10 bg-white/10 px-3 py-1.5 text-sm text-white">Heading</button>
+                    <button type="button" onClick={() => formatCommand("fontSize", "4")} className="rounded-xl border border-white/10 bg-white/10 px-3 py-1.5 text-sm text-white">Larger text</button>
+                    <button type="button" onClick={() => formatCommand("removeFormat")} className="rounded-xl border border-white/10 bg-white/10 px-3 py-1.5 text-sm text-white">Clear</button>
+                  </div>
+                  <div
+                    contentEditable
+                    suppressContentEditableWarning
+                    onInput={(event) =>
+                      setOpportunityDraft((current: any) => ({
+                        ...current,
+                        description: (event.currentTarget as HTMLDivElement).innerHTML,
+                      }))
+                    }
+                    dangerouslySetInnerHTML={{ __html: opportunityDraft.description || "" }}
+                    className="min-h-[220px] rounded-3xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white focus:outline-none"
+                  />
+                  <input type="hidden" name="description" value={opportunityDraft.description} required />
+                </div>
                 <div className="grid gap-4 md:grid-cols-2">
                   <input name="location" value={opportunityDraft.location} onChange={(event) => setOpportunityDraft((current: any) => ({ ...current, location: event.target.value }))} placeholder="Location" className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white" />
                   <input name="department" value={opportunityDraft.department} onChange={(event) => setOpportunityDraft((current: any) => ({ ...current, department: event.target.value }))} placeholder="Department" className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white" />
@@ -611,8 +654,10 @@ export function AdminSection() {
                   <input name="opportunity_type" value={opportunityDraft.opportunity_type} onChange={(event) => setOpportunityDraft((current: any) => ({ ...current, opportunity_type: event.target.value }))} placeholder="Type" className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white" />
                 </div>
                 <input name="apply_url" value={opportunityDraft.apply_url} onChange={(event) => setOpportunityDraft((current: any) => ({ ...current, apply_url: event.target.value }))} placeholder="Apply URL" className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white" />
+                <input name="image_url_text" value={opportunityDraft.image_url_text} onChange={(event) => setOpportunityDraft((current: any) => ({ ...current, image_url_text: event.target.value }))} placeholder="Image link, optional" className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white" />
                 <label className="block text-sm text-slate-300">
-                  Opportunity image
+                  Opportunity image upload
+                  <span className="mt-1 block text-xs text-slate-400">Upload an image or paste a direct image link above for hosted images.</span>
                   <input name="image" type="file" accept="image/*" className="mt-2 block w-full text-sm text-slate-300" />
                 </label>
                 {message ? (
@@ -647,6 +692,7 @@ export function AdminSection() {
                           title: item.title ?? "",
                           organization: item.organization ?? "",
                           category_slug: String(item.category || "").toLowerCase(),
+                          featured: item.featured ?? true,
                           deadline_mode: item.deadline ? "date" : item.deadline_label === "ASAP" ? "asap" : item.deadline_label === "Not specified" ? "not_specified" : "rolling",
                           deadline: item.deadline ? new Date(item.deadline).toISOString().slice(0, 16) : "",
                           deadline_label: item.deadline_label ?? "",
@@ -657,6 +703,7 @@ export function AdminSection() {
                           compensation: item.compensation ?? "",
                           opportunity_type: item.opportunity_type ?? "",
                           apply_url: item.apply_url ?? "",
+                          image_url_text: item.image_url?.startsWith("http") ? item.image_url : "",
                         });
                         setMessage(`Editing ${item.title}. Update the fields and save changes.`);
                       }} className="rounded-2xl border border-cyan-300/25 bg-white/10 px-4 py-2 text-sm font-medium text-white hover:bg-white/15">

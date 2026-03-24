@@ -34,7 +34,10 @@ export default async function OpportunityDetailPage({
             <h1 className="text-4xl font-semibold text-white">{opportunity.title}</h1>
             <div className="text-base text-cyan-100">{opportunity.organization}</div>
           </div>
-          <p className="text-base leading-8 text-slate-200">{opportunity.description}</p>
+          <div
+            className="prose prose-invert max-w-none text-base leading-8 text-slate-200 [&_h3]:mt-6 [&_h3]:text-xl [&_h3]:font-semibold [&_li]:my-1"
+            dangerouslySetInnerHTML={{ __html: opportunity.description }}
+          />
           <div className="rounded-3xl border border-white/10 bg-slate-950/50 px-5 py-4 text-sm text-slate-300">
             Before posting any opportunity, we first check for you regarding being legit, we are here for you.
           </div>
@@ -53,12 +56,12 @@ export default async function OpportunityDetailPage({
         <div className="space-y-6">
           <GlassCard className="space-y-3">
             <div className="text-lg font-semibold text-white">Summary</div>
-            <p className="text-sm text-slate-300">Compensation: {opportunity.compensation ?? "Not specified"}</p>
-            <p className="text-sm text-slate-300">Location: {opportunity.location ?? "Flexible"}</p>
-            <p className="text-sm text-slate-300">Department: {opportunity.department ?? "Not specified"}</p>
-            <p className="text-sm text-slate-300">Type: {opportunity.opportunity_type ?? "Not specified"}</p>
-            <p className="text-sm text-slate-300">Deadline: {opportunity.deadline ? new Date(opportunity.deadline).toLocaleDateString() : opportunity.deadline_label ?? "Rolling"}</p>
-            <p className="text-sm text-slate-300">Read by: {opportunity.views_count}</p>
+            <p className="text-sm text-slate-300"><strong className="text-white">Compensation:</strong> {opportunity.compensation ?? "Not specified"}</p>
+            <p className="text-sm text-slate-300"><strong className="text-white">Location:</strong> {opportunity.location ?? "Flexible"}</p>
+            <p className="text-sm text-slate-300"><strong className="text-white">Department:</strong> {opportunity.department ?? "Not specified"}</p>
+            <p className="text-sm text-slate-300"><strong className="text-white">Type:</strong> {opportunity.opportunity_type ?? "Not specified"}</p>
+            <p className="text-sm text-slate-300"><strong className="text-white">Deadline:</strong> {opportunity.deadline ? new Date(opportunity.deadline).toLocaleDateString() : opportunity.deadline_label ?? "Rolling"}</p>
+            <p className="text-sm text-slate-300"><strong className="text-white">Read by:</strong> {opportunity.views_count}</p>
           </GlassCard>
           <div className="space-y-4">
             <div className="text-xl font-semibold text-white">Related opportunities</div>
