@@ -4,7 +4,7 @@ import Link from "next/link";
 import { FormEvent, useEffect, useState } from "react";
 
 import { DocumentBuilder } from "@/components/forms";
-import { API_BASE_URL, clientApi, resolveAssetUrl } from "@/lib/client-api";
+import { API_BASE_URL, clientApi, getStoredAccessToken, resolveAssetUrl } from "@/lib/client-api";
 
 function RequireAuth({
   title,
@@ -279,6 +279,7 @@ export function AdminSection() {
   const [data, setData] = useState<any>(null);
   const [activeTab, setActiveTab] = useState<"opportunities" | "events" | "newsletters" | "testimonials" | "groups" | "locations">("opportunities");
   const [message, setMessage] = useState<string | null>(null);
+  const [messageTone, setMessageTone] = useState<"success" | "error" | "info">("info");
   const [opportunities, setOpportunities] = useState<any[]>([]);
   const [events, setEvents] = useState<any[]>([]);
   const [newsletters, setNewsletters] = useState<any[]>([]);
@@ -329,13 +330,31 @@ export function AdminSection() {
   const [locationDraft, setLocationDraft] = useState<any>(blankLocation);
 
   async function loadAdminData() {
-    clientApi("/admin/overview").then(setData).catch(() => setData({ error: true }));
-    clientApi<{ items: any[] }>("/admin/opportunities").then((payload) => setOpportunities(payload.items)).catch(() => setOpportunities([]));
-    clientApi<{ items: any[] }>("/admin/events").then((payload) => setEvents(payload.items)).catch(() => setEvents([]));
-    clientApi<{ items: any[] }>("/admin/newsletters").then((payload) => setNewsletters(payload.items)).catch(() => setNewsletters([]));
-    clientApi<{ items: any[] }>("/admin/testimonials").then((payload) => setTestimonials(payload.items)).catch(() => setTestimonials([]));
-    clientApi<{ items: any[] }>("/admin/groups").then((payload) => setGroups(payload.items)).catch(() => setGroups([]));
-    clientApi<{ items: any[] }>("/admin/locations").then((payload) => setLocations(payload.items)).catch(() => setLocations([]));
+    const [
+      overview,
+      opportunityPayload,
+      eventPayload,
+      newsletterPayload,
+      testimonialPayload,
+      groupPayload,
+      locationPayload,
+    ] = await Promise.allSettled([
+      clientApi("/admin/overview"),
+      clientApi<{ items: any[] }>("/admin/opportunities"),
+      clientApi<{ items: any[] }>("/admin/events"),
+      clientApi<{ items: any[] }>("/admin/newsletters"),
+      clientApi<{ items: any[] }>("/admin/testimonials"),
+      clientApi<{ items: any[] }>("/admin/groups"),
+      clientApi<{ items: any[] }>("/admin/locations"),
+    ]);
+
+    setData(overview.status === "fulfilled" ? overview.value : { error: true });
+    setOpportunities(opportunityPayload.status === "fulfilled" ? opportunityPayload.value.items : []);
+    setEvents(eventPayload.status === "fulfilled" ? eventPayload.value.items : []);
+    setNewsletters(newsletterPayload.status === "fulfilled" ? newsletterPayload.value.items : []);
+    setTestimonials(testimonialPayload.status === "fulfilled" ? testimonialPayload.value.items : []);
+    setGroups(groupPayload.status === "fulfilled" ? groupPayload.value.items : []);
+    setLocations(locationPayload.status === "fulfilled" ? locationPayload.value.items : []);
   }
 
   useEffect(() => {
@@ -348,15 +367,30 @@ export function AdminSection() {
     const endpoint = editingOpportunityId ? `${API_BASE_URL}/admin/opportunities/${editingOpportunityId}` : `${API_BASE_URL}/admin/opportunities`;
     const method = editingOpportunityId ? "PUT" : "POST";
     try {
-      const response = await fetch(endpoint, { method, credentials: "include", body: form });
-      if (!response.ok) throw new Error();
+      const token = getStoredAccessToken();
+      const response = await fetch(endpoint, {
+        method,
+        credentials: "include",
+        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+        body: form,
+      });
+      if (!response.ok) {
+        const contentType = response.headers.get("content-type") ?? "";
+        if (contentType.includes("application/json")) {
+          const payload = await response.json();
+          throw new Error(payload.detail ?? "Could not save opportunity.");
+        }
+        throw new Error(await response.text() || "Could not save opportunity.");
+      }
+      setMessageTone("success");
       setMessage(editingOpportunityId ? "Opportunity updated successfully." : "Opportunity created successfully.");
       setEditingOpportunityId(null);
       setOpportunityDraft(blankOpportunity);
       event.currentTarget.reset();
       await loadAdminData();
-    } catch {
-      setMessage("Could not save opportunity.");
+    } catch (error) {
+      setMessageTone("error");
+      setMessage(error instanceof Error ? error.message : "Could not save opportunity.");
     }
   }
 
@@ -366,12 +400,14 @@ export function AdminSection() {
     const method = editingEventId ? "PUT" : "POST";
     try {
       await clientApi(endpoint, { method, bodyJson: eventDraft });
+      setMessageTone("success");
       setMessage(editingEventId ? "Event updated successfully." : "Event created successfully.");
       setEditingEventId(null);
       setEventDraft(blankEvent);
       await loadAdminData();
-    } catch {
-      setMessage("Could not save event.");
+    } catch (error) {
+      setMessageTone("error");
+      setMessage(error instanceof Error ? error.message : "Could not save event.");
     }
   }
 
@@ -381,12 +417,14 @@ export function AdminSection() {
     const method = editingNewsletterId ? "PUT" : "POST";
     try {
       await clientApi(endpoint, { method, bodyJson: newsletterDraft });
+      setMessageTone("success");
       setMessage(editingNewsletterId ? "Newsletter updated successfully." : "Newsletter created successfully.");
       setEditingNewsletterId(null);
       setNewsletterDraft(blankNewsletter);
       await loadAdminData();
-    } catch {
-      setMessage("Could not save newsletter.");
+    } catch (error) {
+      setMessageTone("error");
+      setMessage(error instanceof Error ? error.message : "Could not save newsletter.");
     }
   }
 
@@ -396,12 +434,14 @@ export function AdminSection() {
     const method = editingTestimonialId ? "PUT" : "POST";
     try {
       await clientApi(endpoint, { method, bodyJson: testimonialDraft });
+      setMessageTone("success");
       setMessage(editingTestimonialId ? "Testimonial updated successfully." : "Testimonial created successfully.");
       setEditingTestimonialId(null);
       setTestimonialDraft(blankTestimonial);
       await loadAdminData();
-    } catch {
-      setMessage("Could not save testimonial.");
+    } catch (error) {
+      setMessageTone("error");
+      setMessage(error instanceof Error ? error.message : "Could not save testimonial.");
     }
   }
 
@@ -411,12 +451,14 @@ export function AdminSection() {
     const method = editingGroupId ? "PUT" : "POST";
     try {
       await clientApi(endpoint, { method, bodyJson: groupDraft });
+      setMessageTone("success");
       setMessage(editingGroupId ? "Group updated successfully." : "Group created successfully.");
       setEditingGroupId(null);
       setGroupDraft(blankGroup);
       await loadAdminData();
-    } catch {
-      setMessage("Could not save group.");
+    } catch (error) {
+      setMessageTone("error");
+      setMessage(error instanceof Error ? error.message : "Could not save group.");
     }
   }
 
@@ -426,30 +468,34 @@ export function AdminSection() {
     const method = editingLocationId ? "PUT" : "POST";
     try {
       await clientApi(endpoint, { method, bodyJson: locationDraft });
+      setMessageTone("success");
       setMessage(editingLocationId ? "Location updated successfully." : "Location created successfully.");
       setEditingLocationId(null);
       setLocationDraft(blankLocation);
       await loadAdminData();
-    } catch {
-      setMessage("Could not save location.");
+    } catch (error) {
+      setMessageTone("error");
+      setMessage(error instanceof Error ? error.message : "Could not save location.");
     }
   }
 
   async function destroy(endpoint: string, successMessage: string) {
     try {
       await clientApi(endpoint, { method: "DELETE" });
+      setMessageTone("success");
       setMessage(successMessage);
       await loadAdminData();
-    } catch {
-      setMessage("Could not delete item.");
+    } catch (error) {
+      setMessageTone("error");
+      setMessage(error instanceof Error ? error.message : "Could not delete item.");
     }
   }
 
   const tabClass = (name: typeof activeTab) =>
     `rounded-full px-4 py-2 text-sm transition ${
       activeTab === name
-        ? "bg-white text-slate-950 font-semibold"
-        : "border border-white/10 bg-white/5 text-white"
+        ? "bg-white text-slate-950 font-semibold shadow-[0_12px_30px_rgba(7,18,32,0.14)]"
+        : "border border-white/10 bg-white/10 text-white hover:border-cyan-300/30 hover:bg-white/15"
     }`;
 
   return (
@@ -514,8 +560,22 @@ export function AdminSection() {
                   Opportunity image
                   <input name="image" type="file" accept="image/*" className="mt-2 block w-full text-sm text-slate-300" />
                 </label>
-                {message ? <div className="rounded-2xl border border-cyan-300/15 bg-cyan-400/8 px-4 py-3 text-sm text-cyan-50">{message}</div> : null}
-                <button className="rounded-2xl bg-white px-5 py-3 text-sm font-semibold text-slate-950">{editingOpportunityId ? "Save changes" : "Publish opportunity"}</button>
+                {message ? (
+                  <div
+                    className={`rounded-2xl px-4 py-3 text-sm ${
+                      messageTone === "error"
+                        ? "border border-red-400/25 bg-red-500/12 text-red-100"
+                        : messageTone === "success"
+                          ? "border border-emerald-400/25 bg-emerald-500/12 text-emerald-50"
+                          : "border border-cyan-300/25 bg-cyan-400/12 text-cyan-50"
+                    }`}
+                  >
+                    {message}
+                  </div>
+                ) : null}
+                <button className="rounded-2xl border border-cyan-300/30 bg-[linear-gradient(135deg,#1ee3ff,#1c7eff)] px-5 py-3 text-sm font-semibold text-slate-950 shadow-[0_16px_34px_rgba(18,121,255,0.22)]">
+                  {editingOpportunityId ? "Save changes" : "Publish opportunity"}
+                </button>
               </form>
               <div className="space-y-4">
                 {opportunities.map((item) => (
@@ -542,10 +602,10 @@ export function AdminSection() {
                           apply_url: item.apply_url ?? "",
                         });
                         setMessage(`Editing ${item.title}. Update the fields and save changes.`);
-                      }} className="rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-white">
+                      }} className="rounded-2xl border border-cyan-300/25 bg-white/10 px-4 py-2 text-sm font-medium text-white hover:bg-white/15">
                         Edit
                       </button>
-                      <button onClick={() => destroy(`/admin/opportunities/${item.id}`, "Opportunity deleted successfully.")} className="rounded-2xl border border-red-400/20 bg-red-500/10 px-4 py-2 text-sm text-red-200">
+                      <button onClick={() => destroy(`/admin/opportunities/${item.id}`, "Opportunity deleted successfully.")} className="rounded-2xl border border-red-400/30 bg-red-500/14 px-4 py-2 text-sm font-medium text-red-100 hover:bg-red-500/20">
                         Delete
                       </button>
                     </div>

@@ -99,19 +99,19 @@ a {
   position: absolute;
   top: 0;
   bottom: 0;
-  width: 24px;
+  width: 12px;
   pointer-events: none;
   z-index: 2;
 }
 
 .section-fade-guard::before {
   left: 0;
-  background: linear-gradient(90deg, var(--alx-bg), transparent);
+  background: linear-gradient(90deg, color-mix(in srgb, var(--alx-bg) 72%, transparent), transparent);
 }
 
 .section-fade-guard::after {
   right: 0;
-  background: linear-gradient(270deg, var(--alx-bg), transparent);
+  background: linear-gradient(270deg, color-mix(in srgb, var(--alx-bg) 72%, transparent), transparent);
 }
 
 [data-theme="light"] .hero-glow {
@@ -262,4 +262,22 @@ a {
 
 [data-theme="light"] .shadow-\[0_24px_80px_rgba\(12\,145\,210\,0\.16\)\] {
   box-shadow: 0 20px 56px rgba(29, 103, 160, 0.08) !important;
+}
+
+[data-theme="light"] .bg-white {
+  box-shadow: 0 14px 32px rgba(9, 49, 90, 0.08);
+}
+
+[data-theme="light"] .bg-white\/10 {
+  background-color: rgba(255, 255, 255, 0.94) !important;
+}
+
+[data-theme="light"] .bg-red-500\/14,
+[data-theme="light"] .bg-red-500\/10 {
+  background-color: rgba(220, 38, 38, 0.12) !important;
+}
+
+[data-theme="light"] .text-red-100,
+[data-theme="light"] .text-red-200 {
+  color: #9f1239 !important;
 }
