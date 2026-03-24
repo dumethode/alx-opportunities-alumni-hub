@@ -17,6 +17,7 @@ def serialize_opportunity(item: Opportunity) -> dict:
         "compensation": item.compensation,
         "opportunity_type": item.opportunity_type,
         "deadline": item.deadline,
+        "deadline_label": item.deadline_label,
         "apply_url": item.apply_url,
         "image_url": item.image_url,
         "featured": item.featured,

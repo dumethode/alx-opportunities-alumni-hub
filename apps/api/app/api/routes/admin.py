@@ -94,6 +94,7 @@ def create_opportunity(
     apply_url: str | None = Form(default=None),
     featured: bool = Form(default=False),
     deadline: str | None = Form(default=None),
+    deadline_label: str | None = Form(default=None),
     image: UploadFile | None = File(default=None),
 ) -> MessageResponse:
     category = db.query(OpportunityCategory).filter(OpportunityCategory.slug == category_slug).first()
@@ -113,6 +114,7 @@ def create_opportunity(
         apply_url=apply_url,
         featured=featured,
         deadline=datetime.fromisoformat(deadline) if deadline else None,
+        deadline_label=deadline_label or None,
         image_url=store_opportunity_image(image),
         created_by=admin_user.id,
     )
@@ -138,6 +140,7 @@ def update_opportunity(
     apply_url: str | None = Form(default=None),
     featured: bool = Form(default=False),
     deadline: str | None = Form(default=None),
+    deadline_label: str | None = Form(default=None),
     image: UploadFile | None = File(default=None),
 ) -> MessageResponse:
     item = db.query(Opportunity).filter(Opportunity.id == opportunity_id).first()
@@ -160,6 +163,7 @@ def update_opportunity(
     item.apply_url = apply_url
     item.featured = featured
     item.deadline = datetime.fromisoformat(deadline) if deadline else None
+    item.deadline_label = deadline_label or None
     new_image_url = store_opportunity_image(image)
     if new_image_url:
         item.image_url = new_image_url

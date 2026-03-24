@@ -45,6 +45,8 @@ def ensure_runtime_columns() -> None:
             opportunity_columns = {column["name"] for column in inspector.get_columns("opportunities")}
             if "image_url" not in opportunity_columns:
                 connection.execute(text("ALTER TABLE opportunities ADD COLUMN image_url VARCHAR(255)"))
+            if "deadline_label" not in opportunity_columns:
+                connection.execute(text("ALTER TABLE opportunities ADD COLUMN deadline_label VARCHAR(80)"))
 
 
 @app.on_event("startup")

@@ -297,7 +297,9 @@ export function AdminSection() {
     title: "",
     organization: "",
     category_slug: "jobs",
+    deadline_mode: "rolling",
     deadline: "",
+    deadline_label: "",
     excerpt: "",
     description: "",
     location: "",
@@ -363,9 +365,20 @@ export function AdminSection() {
 
   async function submitOpportunity(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const form = new FormData(event.currentTarget);
+    const formElement = event.currentTarget;
+    const form = new FormData(formElement);
     const endpoint = editingOpportunityId ? `${API_BASE_URL}/admin/opportunities/${editingOpportunityId}` : `${API_BASE_URL}/admin/opportunities`;
     const method = editingOpportunityId ? "PUT" : "POST";
+    const deadlineMode = String(opportunityDraft.deadline_mode || "rolling");
+    if (deadlineMode !== "date") {
+      form.set("deadline", "");
+      form.set(
+        "deadline_label",
+        deadlineMode === "asap" ? "ASAP" : deadlineMode === "not_specified" ? "Not specified" : "Rolling",
+      );
+    } else {
+      form.set("deadline_label", "");
+    }
     try {
       const token = getStoredAccessToken();
       const response = await fetch(endpoint, {
@@ -386,7 +399,7 @@ export function AdminSection() {
       setMessage(editingOpportunityId ? "Opportunity updated successfully." : "Opportunity created successfully.");
       setEditingOpportunityId(null);
       setOpportunityDraft(blankOpportunity);
-      event.currentTarget.reset();
+      formElement.reset();
       await loadAdminData();
     } catch (error) {
       setMessageTone("error");
@@ -543,9 +556,51 @@ export function AdminSection() {
                     <option value="tenders">Tenders</option>
                     <option value="deals">Deals</option>
                   </select>
-                  <input name="deadline" value={opportunityDraft.deadline} onChange={(event) => setOpportunityDraft((current: any) => ({ ...current, deadline: event.target.value }))} type="datetime-local" className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white" />
+                  <select
+                    name="deadline_mode"
+                    value={opportunityDraft.deadline_mode}
+                    onChange={(event) =>
+                      setOpportunityDraft((current: any) => ({
+                        ...current,
+                        deadline_mode: event.target.value,
+                        deadline_label:
+                          event.target.value === "asap"
+                            ? "ASAP"
+                            : event.target.value === "not_specified"
+                              ? "Not specified"
+                              : event.target.value === "rolling"
+                                ? "Rolling"
+                                : "",
+                      }))
+                    }
+                    className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white"
+                  >
+                    <option value="rolling">Rolling</option>
+                    <option value="date">Specific date</option>
+                    <option value="asap">ASAP</option>
+                    <option value="not_specified">Not specified</option>
+                  </select>
                 </div>
-                <textarea name="excerpt" value={opportunityDraft.excerpt} onChange={(event) => setOpportunityDraft((current: any) => ({ ...current, excerpt: event.target.value }))} placeholder="Excerpt" required rows={2} className="w-full rounded-3xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white" />
+                {opportunityDraft.deadline_mode === "date" ? (
+                  <input
+                    name="deadline"
+                    value={opportunityDraft.deadline}
+                    onChange={(event) => setOpportunityDraft((current: any) => ({ ...current, deadline: event.target.value }))}
+                    type="datetime-local"
+                    className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white"
+                  />
+                ) : (
+                  <div className="rounded-2xl border border-cyan-300/20 bg-cyan-400/10 px-4 py-3 text-sm text-cyan-50">
+                    Deadline display will show as {opportunityDraft.deadline_mode === "asap" ? "ASAP" : opportunityDraft.deadline_mode === "not_specified" ? "Not specified" : "Rolling"}.
+                  </div>
+                )}
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-slate-300">
+                    Short summary
+                    <span className="mt-1 block text-xs text-slate-400">This is the brief card text shown on the opportunities list before someone opens the full opportunity.</span>
+                  </label>
+                  <textarea name="excerpt" value={opportunityDraft.excerpt} onChange={(event) => setOpportunityDraft((current: any) => ({ ...current, excerpt: event.target.value }))} placeholder="A short, clear preview of the opportunity" required rows={2} className="w-full rounded-3xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white" />
+                </div>
                 <textarea name="description" value={opportunityDraft.description} onChange={(event) => setOpportunityDraft((current: any) => ({ ...current, description: event.target.value }))} placeholder="Description" required rows={5} className="w-full rounded-3xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white" />
                 <div className="grid gap-4 md:grid-cols-2">
                   <input name="location" value={opportunityDraft.location} onChange={(event) => setOpportunityDraft((current: any) => ({ ...current, location: event.target.value }))} placeholder="Location" className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white" />
@@ -592,7 +647,9 @@ export function AdminSection() {
                           title: item.title ?? "",
                           organization: item.organization ?? "",
                           category_slug: String(item.category || "").toLowerCase(),
+                          deadline_mode: item.deadline ? "date" : item.deadline_label === "ASAP" ? "asap" : item.deadline_label === "Not specified" ? "not_specified" : "rolling",
                           deadline: item.deadline ? new Date(item.deadline).toISOString().slice(0, 16) : "",
+                          deadline_label: item.deadline_label ?? "",
                           excerpt: item.excerpt ?? "",
                           description: item.description ?? "",
                           location: item.location ?? "",

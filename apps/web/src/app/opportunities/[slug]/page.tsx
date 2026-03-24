@@ -57,6 +57,7 @@ export default async function OpportunityDetailPage({
             <p className="text-sm text-slate-300">Location: {opportunity.location ?? "Flexible"}</p>
             <p className="text-sm text-slate-300">Department: {opportunity.department ?? "Not specified"}</p>
             <p className="text-sm text-slate-300">Type: {opportunity.opportunity_type ?? "Not specified"}</p>
+            <p className="text-sm text-slate-300">Deadline: {opportunity.deadline ? new Date(opportunity.deadline).toLocaleDateString() : opportunity.deadline_label ?? "Rolling"}</p>
             <p className="text-sm text-slate-300">Read by: {opportunity.views_count}</p>
           </GlassCard>
           <div className="space-y-4">

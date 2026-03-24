@@ -11,6 +11,7 @@ export type Opportunity = {
   compensation?: string | null;
   opportunity_type?: string | null;
   deadline?: string | null;
+  deadline_label?: string | null;
   apply_url?: string | null;
   image_url?: string | null;
   featured: boolean;

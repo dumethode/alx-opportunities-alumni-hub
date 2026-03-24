@@ -236,6 +236,10 @@ a {
   color: var(--alx-accent-text) !important;
 }
 
+[data-theme="light"] .text-cyan-50 {
+  color: #19516f !important;
+}
+
 [data-theme="light"] .bg-white\/5,
 [data-theme="light"] .bg-white\/6,
 [data-theme="light"] .bg-white\/10 {
@@ -270,6 +274,24 @@ a {
 
 [data-theme="light"] .bg-white\/10 {
   background-color: rgba(255, 255, 255, 0.94) !important;
+}
+
+[data-theme="light"] .bg-cyan-400\/8,
+[data-theme="light"] .bg-cyan-400\/10,
+[data-theme="light"] .bg-cyan-400\/12 {
+  background-color: rgba(14, 165, 233, 0.1) !important;
+}
+
+[data-theme="light"] .border-cyan-300\/15,
+[data-theme="light"] .border-cyan-300\/20,
+[data-theme="light"] .border-cyan-300\/25,
+[data-theme="light"] .border-cyan-300\/30 {
+  border-color: rgba(14, 165, 233, 0.22) !important;
+}
+
+[data-theme="light"] .bg-\[linear-gradient\(135deg\,rgba\(30\,227\,255\,0\.22\)\,rgba\(28\,126\,255\,0\.16\)\)\],
+[data-theme="light"] .bg-\[linear-gradient\(135deg\,rgba\(30\,227\,255\,0\.16\)\,rgba\(28\,126\,255\,0\.12\)\)\] {
+  background: linear-gradient(135deg, rgba(14, 165, 233, 0.1), rgba(59, 130, 246, 0.08)) !important;
 }
 
 [data-theme="light"] .bg-red-500\/14,

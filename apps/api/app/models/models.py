@@ -106,6 +106,7 @@ class Opportunity(Base):
     opportunity_type: Mapped[str | None] = mapped_column(String(120), nullable=True)
     start_date: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
     deadline: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+    deadline_label: Mapped[str | None] = mapped_column(String(80), nullable=True)
     apply_url: Mapped[str | None] = mapped_column(String(255), nullable=True)
     image_url: Mapped[str | None] = mapped_column(String(255), nullable=True)
     status: Mapped[str] = mapped_column(String(40), default="published")
