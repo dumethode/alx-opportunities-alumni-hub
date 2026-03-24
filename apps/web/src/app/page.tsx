@@ -133,7 +133,7 @@ export default async function HomePage() {
           action={{ href: "/events", label: "Explore events" }}
         />
         </Reveal>
-        <div className="mt-8">
+        <div className="section-fade-guard mt-8">
           <CarouselStrip>
             {home.featured_events.map((event: any) => (
               <div key={event.id} className="min-w-[320px] snap-start lg:min-w-[360px]">
@@ -154,6 +154,7 @@ export default async function HomePage() {
               description="The product should feel like a serious career operating system, not just a listing board."
               />
             </Reveal>
+            <div className="section-fade-guard">
             <CarouselStrip>
               {home.testimonials.map((testimonial: any) => (
                 <div key={testimonial.id} className="min-w-[300px] snap-start lg:min-w-[340px]">
@@ -161,6 +162,7 @@ export default async function HomePage() {
                 </div>
               ))}
             </CarouselStrip>
+            </div>
           </div>
           <div className="space-y-6">
             <Reveal>

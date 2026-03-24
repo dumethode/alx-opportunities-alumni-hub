@@ -98,12 +98,13 @@ export function AuthForm({ mode }: { mode: "sign-in" | "sign-up" }) {
     const form = new FormData(event.currentTarget);
 
     try {
+      const email = String(form.get("email") || "").trim().toLowerCase();
       if (mode === "sign-up") {
         await clientApi("/auth/register", {
           method: "POST",
           bodyJson: {
             full_name: form.get("full_name"),
-            email: form.get("email"),
+            email,
             password: form.get("password"),
           },
         });
@@ -111,7 +112,7 @@ export function AuthForm({ mode }: { mode: "sign-in" | "sign-up" }) {
         await clientApi("/auth/login", {
           method: "POST",
           bodyJson: {
-            email: form.get("email"),
+            email,
             password: form.get("password"),
           },
         });
@@ -119,7 +120,8 @@ export function AuthForm({ mode }: { mode: "sign-in" | "sign-up" }) {
       router.push("/dashboard");
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Unable to continue");
+      const detail = err instanceof Error ? err.message : "Unable to continue";
+      setError(detail === "Invalid credentials" ? "Email or password is incorrect." : detail);
     } finally {
       setLoading(false);
     }
@@ -143,7 +145,7 @@ export function AuthForm({ mode }: { mode: "sign-in" | "sign-up" }) {
       </label>
       {error ? <div className="rounded-2xl border border-red-400/20 bg-red-500/10 px-4 py-3 text-sm text-red-200">{error}</div> : null}
       <button disabled={loading} className="w-full rounded-2xl bg-[linear-gradient(135deg,#1ee3ff,#1c7eff)] px-4 py-3 font-semibold text-slate-950 transition hover:scale-[1.01] disabled:opacity-70">
-        {loading ? "Please wait..." : mode === "sign-up" ? "Create account" : "Sign in"}
+        {loading ? "Signing you in..." : mode === "sign-up" ? "Create account" : "Sign in"}
       </button>
     </form>
   );

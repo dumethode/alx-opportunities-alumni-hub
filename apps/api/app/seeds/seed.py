@@ -31,15 +31,24 @@ def ensure_user(
     headline: str,
     location: str,
     bio: str | None = None,
+    sync_password: bool = False,
 ) -> User:
-    user = db.query(User).filter(User.email == email).first()
+    normalized_email = email.lower()
+    user = db.query(User).filter(User.email == normalized_email).first()
+    if not user and role == UserRole.ADMIN:
+        user = db.query(User).filter(User.role == UserRole.ADMIN).first()
     if not user:
-        user = User(email=email, password_hash=hash_password(password), role=role)
+        user = User(email=normalized_email, password_hash=hash_password(password), role=role)
         db.add(user)
         db.flush()
+    else:
+        user.email = normalized_email
 
     if user.role != role:
         user.role = role
+
+    if sync_password:
+        user.password_hash = hash_password(password)
 
     if not user.profile:
         db.add(
@@ -64,6 +73,7 @@ def seed_database(db: Session) -> None:
         full_name="ALX Hub Admin",
         headline="Platform administrator",
         location="Kigali, Rwanda",
+        sync_password=True,
     )
     user = ensure_user(
         db,

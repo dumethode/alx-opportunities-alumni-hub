@@ -167,7 +167,7 @@ export function SiteShell({ children }: { children: ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
-  const [theme, setTheme] = useState<"dark" | "light">("dark");
+  const [theme, setTheme] = useState<"dark" | "light">("light");
   const [me, setMe] = useState<MeResponse | null>(null);
   const isAdmin = me?.role === "admin";
   const allLinks = useMemo(
@@ -179,12 +179,32 @@ export function SiteShell({ children }: { children: ReactNode }) {
   const profileRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
+    document.documentElement.dataset.theme = "light";
     const savedTheme = window.localStorage.getItem("alx-theme");
-    const nextTheme = savedTheme === "light" ? "light" : "dark";
+    const nextTheme = savedTheme === "dark" ? "dark" : "light";
     setTheme(nextTheme);
     document.documentElement.dataset.theme = nextTheme;
-    clientApi<MeResponse>("/auth/me").then(setMe).catch(() => setMe(null));
   }, []);
+
+  useEffect(() => {
+    if (pathname.startsWith("/auth")) {
+      setMe(null);
+      return;
+    }
+
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), 3500);
+
+    clientApi<MeResponse>("/auth/me", { signal: controller.signal })
+      .then(setMe)
+      .catch(() => setMe(null))
+      .finally(() => window.clearTimeout(timeout));
+
+    return () => {
+      window.clearTimeout(timeout);
+      controller.abort();
+    };
+  }, [pathname]);
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme;

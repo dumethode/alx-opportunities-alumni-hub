@@ -57,12 +57,12 @@ export function OpportunityCard({ opportunity }: { opportunity: Opportunity }) {
 
 export function EventCard({ event }: { event: EventItem }) {
   return (
-    <GlassCard className="group space-y-5 transition duration-300 hover:-translate-y-1 hover:shadow-[0_24px_80px_rgba(0,0,0,0.22)]">
+    <GlassCard className="glass-card-balanced group space-y-5 transition duration-300 hover:-translate-y-1 hover:shadow-[0_24px_80px_rgba(0,0,0,0.22)]">
       <div className="flex items-center justify-between">
-        <span className="rounded-full border border-cyan-300/25 bg-cyan-300/15 px-3 py-1 text-xs font-semibold text-cyan-50">
+        <span className="rounded-full border border-cyan-300/25 bg-cyan-300/12 px-3 py-1 text-xs font-semibold text-cyan-100">
           {event.category}
         </span>
-        <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs uppercase tracking-[0.18em] text-slate-200">
+        <span className="rounded-full border border-white/10 bg-white/10 px-3 py-1 text-xs uppercase tracking-[0.18em] text-slate-200">
           {event.status}
         </span>
       </div>
@@ -90,9 +90,9 @@ export function EventCard({ event }: { event: EventItem }) {
 
 export function TestimonialCard({ testimonial }: { testimonial: Testimonial }) {
   return (
-    <GlassCard className="group space-y-4 transition duration-300 hover:-translate-y-1 hover:shadow-[0_24px_80px_rgba(12,145,210,0.16)]">
+    <GlassCard className="glass-card-balanced group space-y-4 transition duration-300 hover:-translate-y-1 hover:shadow-[0_24px_80px_rgba(12,145,210,0.16)]">
       <Sparkles className="h-6 w-6 text-cyan-200" />
-      <p className="text-base leading-8 text-slate-100">“{testimonial.quote}”</p>
+      <p className="text-base leading-8 text-slate-200">“{testimonial.quote}”</p>
       <div className="text-sm text-slate-300">
         <div className="font-medium text-white">{testimonial.name}</div>
         <div>

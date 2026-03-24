@@ -51,11 +51,9 @@ function RequireAuth({
 
 export function DashboardSection() {
   const [data, setData] = useState<any>(null);
-  const [me, setMe] = useState<any>(null);
 
   useEffect(() => {
     clientApi("/dashboard").then(setData).catch(() => setData({ error: true }));
-    clientApi("/auth/me").then(setMe).catch(() => setMe(null));
   }, []);
 
   return (
@@ -68,7 +66,7 @@ export function DashboardSection() {
         </div>
       ) : (
         <div className="space-y-5">
-          {me?.role === "admin" ? (
+          {data?.user?.role === "admin" ? (
             <div className="rounded-[28px] border border-cyan-300/20 bg-[linear-gradient(135deg,rgba(30,227,255,0.16),rgba(28,126,255,0.12))] p-6">
               <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                 <div>
