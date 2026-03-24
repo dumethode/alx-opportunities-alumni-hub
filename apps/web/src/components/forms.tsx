@@ -200,7 +200,7 @@ export function ContactForm() {
       <textarea name="message" placeholder="How can we help?" required rows={5} className="w-full rounded-3xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white" />
       {state === "success" ? <div className="rounded-2xl border border-emerald-400/20 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-200">Message sent successfully. Expect a response within 48 business hours.</div> : null}
       {state === "error" ? <div className="rounded-2xl border border-red-400/20 bg-red-500/10 px-4 py-3 text-sm text-red-200">We could not send your message. Please try again.</div> : null}
-      <button disabled={state === "loading"} className="rounded-2xl bg-white px-5 py-3 text-sm font-semibold text-slate-950">
+      <button disabled={state === "loading"} className="rounded-2xl bg-white px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-slate-100 active:scale-[0.98] disabled:opacity-70 disabled:pointer-events-none">
         {state === "loading" ? "Sending..." : "Send message"}
       </button>
     </form>
@@ -275,7 +275,7 @@ function DynamicList({
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div className="text-lg font-semibold text-white">{title}</div>
-        <button type="button" onClick={add} className="rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-white">
+        <button type="button" onClick={add} className="rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-white transition hover:bg-white/15 active:scale-[0.98]">
           Add More
         </button>
       </div>
@@ -438,7 +438,7 @@ function ResumeBuilderForm() {
       ]} />
       {status === "success" ? <div className="rounded-2xl border border-emerald-400/20 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-200">Your resume has been generated and downloaded.</div> : null}
       {status === "error" ? <div className="rounded-2xl border border-red-400/20 bg-red-500/10 px-4 py-3 text-sm text-red-200">Resume generation failed. Please try again.</div> : null}
-      <button disabled={status === "loading"} className="rounded-2xl bg-white px-5 py-3 text-sm font-semibold text-slate-950">
+      <button disabled={status === "loading"} className="rounded-2xl bg-white px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-slate-100 active:scale-[0.98] disabled:opacity-70 disabled:pointer-events-none">
         {status === "loading" ? "Generating..." : "Generate resume"}
       </button>
     </form>
@@ -535,7 +535,7 @@ function CoverLetterBuilderForm() {
       <textarea name="closing" rows={2} placeholder="Closing paragraph and signature" required className="w-full rounded-3xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white" />
       {status === "success" ? <div className="rounded-2xl border border-emerald-400/20 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-200">Your cover letter has been generated and downloaded.</div> : null}
       {status === "error" ? <div className="rounded-2xl border border-red-400/20 bg-red-500/10 px-4 py-3 text-sm text-red-200">Cover letter generation failed. Please try again.</div> : null}
-      <button disabled={status === "loading"} className="rounded-2xl bg-white px-5 py-3 text-sm font-semibold text-slate-950">
+      <button disabled={status === "loading"} className="rounded-2xl bg-white px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-slate-100 active:scale-[0.98] disabled:opacity-70 disabled:pointer-events-none">
         {status === "loading" ? "Generating..." : "Generate cover letter"}
       </button>
     </form>

@@ -27,7 +27,7 @@ export function SaveOpportunityButton({ opportunityId }: { opportunityId: number
       <button
         onClick={save}
         disabled={loading}
-        className="rounded-2xl border border-white/10 bg-white/5 px-5 py-3 text-sm font-semibold text-white"
+        className="rounded-2xl border border-white/10 bg-white/5 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/15 active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none"
       >
         {loading ? "Saving..." : "Save opportunity"}
       </button>

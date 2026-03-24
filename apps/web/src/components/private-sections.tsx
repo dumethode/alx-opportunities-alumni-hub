@@ -37,7 +37,7 @@ function RequireAuth({
             Sign in to unlock the full ALX member experience, including private tools, saved progress, alumni access, and support services.
           </div>
           <div className="mt-5">
-            <Link href="/auth/sign-in" className="inline-flex items-center rounded-2xl bg-white px-5 py-3 text-sm font-semibold text-slate-950">
+            <Link href="/auth/sign-in" className="inline-flex items-center rounded-2xl bg-white px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-slate-100 active:scale-[0.98]">
               Sign in to unlock it
             </Link>
           </div>
@@ -136,10 +136,10 @@ export function AlumniSection() {
                 <div className="text-sm leading-7 text-slate-300">{item.expertise}</div>
               </div>
               <div className="mt-5 flex flex-wrap gap-3">
-                <a href="mailto:community@alxafrica.com" className="rounded-2xl bg-white px-4 py-2 text-sm font-semibold text-slate-950">
+                <a href="mailto:community@alxafrica.com" className="rounded-2xl bg-white px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-slate-100 active:scale-[0.98]">
                   Request introduction
                 </a>
-                <Link href="/services#mentorship" className="rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-white">
+                <Link href="/services#mentorship" className="rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-white transition hover:bg-white/15 active:scale-[0.98]">
                   Explore mentorship
                 </Link>
               </div>
@@ -220,7 +220,7 @@ export function ServicesSection() {
             <input name="topic" placeholder="Topic" required className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white" />
             <textarea name="goals" placeholder="What support do you need?" required rows={4} className="w-full rounded-3xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white" />
             <input name="preferred_date" type="datetime-local" required className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white" />
-            <button className="rounded-2xl bg-white px-5 py-3 text-sm font-semibold text-slate-950">Submit booking</button>
+            <button className="rounded-2xl bg-white px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-slate-100 active:scale-[0.98]">Submit booking</button>
           </form>
           <form id="supporting-letter" onSubmit={submit} className="rounded-[28px] border border-white/10 bg-white/5 p-6 space-y-4">
             <input type="hidden" name="flow" value="supporting-letter-requests" />
@@ -234,7 +234,7 @@ export function ServicesSection() {
             <textarea name="details" rows={4} placeholder="Share context and key details" required className="w-full rounded-3xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white" />
             <input name="deadline" type="datetime-local" className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white" />
             <div className="text-sm text-slate-300">Expect feedback within 48 business hours.</div>
-            <button className="rounded-2xl bg-white px-5 py-3 text-sm font-semibold text-slate-950">Submit request</button>
+            <button className="rounded-2xl bg-white px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-slate-100 active:scale-[0.98]">Submit request</button>
           </form>
         </div>
         {message ? <div className="rounded-2xl border border-cyan-300/15 bg-cyan-400/8 px-4 py-3 text-sm text-cyan-50">{message}</div> : null}
@@ -246,7 +246,7 @@ export function ServicesSection() {
                 Members can revisit bi-weekly ALX memos, opportunity highlights, and relationship updates.
               </div>
             </div>
-            <Link href="/newsletters" className="rounded-2xl bg-white px-4 py-3 text-sm font-semibold text-slate-950">
+            <Link href="/newsletters" className="rounded-2xl bg-white px-4 py-3 text-sm font-semibold text-slate-950 transition hover:bg-slate-100 active:scale-[0.98]">
               Open archive
             </Link>
           </div>
@@ -633,13 +633,13 @@ export function AdminSection() {
                     <span className="mt-1 block text-xs text-slate-400">Use the tools below for bold, italics, underline, bullets, and larger section headings inside the opportunity description.</span>
                   </label>
                   <div className="flex flex-wrap gap-2 rounded-2xl border border-white/10 bg-white/5 p-3">
-                    <button type="button" onClick={() => formatCommand("bold")} className="rounded-xl border border-white/10 bg-white/10 px-3 py-1.5 text-sm font-semibold text-white">B</button>
-                    <button type="button" onClick={() => formatCommand("italic")} className="rounded-xl border border-white/10 bg-white/10 px-3 py-1.5 text-sm italic text-white">I</button>
-                    <button type="button" onClick={() => formatCommand("underline")} className="rounded-xl border border-white/10 bg-white/10 px-3 py-1.5 text-sm underline text-white">U</button>
-                    <button type="button" onClick={() => formatCommand("insertUnorderedList")} className="rounded-xl border border-white/10 bg-white/10 px-3 py-1.5 text-sm text-white">Bullets</button>
-                    <button type="button" onClick={() => formatCommand("formatBlock", "<h3>")} className="rounded-xl border border-white/10 bg-white/10 px-3 py-1.5 text-sm text-white">Heading</button>
-                    <button type="button" onClick={() => formatCommand("fontSize", "4")} className="rounded-xl border border-white/10 bg-white/10 px-3 py-1.5 text-sm text-white">Larger text</button>
-                    <button type="button" onClick={() => formatCommand("removeFormat")} className="rounded-xl border border-white/10 bg-white/10 px-3 py-1.5 text-sm text-white">Clear</button>
+                    <button type="button" onClick={() => formatCommand("bold")} className="rounded-xl border border-white/10 bg-white/10 px-3 py-1.5 text-sm font-semibold text-white transition hover:bg-white/20 active:scale-[0.95]">B</button>
+                    <button type="button" onClick={() => formatCommand("italic")} className="rounded-xl border border-white/10 bg-white/10 px-3 py-1.5 text-sm italic text-white transition hover:bg-white/20 active:scale-[0.95]">I</button>
+                    <button type="button" onClick={() => formatCommand("underline")} className="rounded-xl border border-white/10 bg-white/10 px-3 py-1.5 text-sm underline text-white transition hover:bg-white/20 active:scale-[0.95]">U</button>
+                    <button type="button" onClick={() => formatCommand("insertUnorderedList")} className="rounded-xl border border-white/10 bg-white/10 px-3 py-1.5 text-sm text-white transition hover:bg-white/20 active:scale-[0.95]">Bullets</button>
+                    <button type="button" onClick={() => formatCommand("formatBlock", "<h3>")} className="rounded-xl border border-white/10 bg-white/10 px-3 py-1.5 text-sm text-white transition hover:bg-white/20 active:scale-[0.95]">Heading</button>
+                    <button type="button" onClick={() => formatCommand("fontSize", "4")} className="rounded-xl border border-white/10 bg-white/10 px-3 py-1.5 text-sm text-white transition hover:bg-white/20 active:scale-[0.95]">Larger text</button>
+                    <button type="button" onClick={() => formatCommand("removeFormat")} className="rounded-xl border border-white/10 bg-white/10 px-3 py-1.5 text-sm text-white transition hover:bg-white/20 active:scale-[0.95]">Clear</button>
                   </div>
                   <div
                     ref={descriptionRef}
@@ -684,7 +684,7 @@ export function AdminSection() {
                     {message}
                   </div>
                 ) : null}
-                <button className="rounded-2xl border border-cyan-300/30 bg-[linear-gradient(135deg,#1ee3ff,#1c7eff)] px-5 py-3 text-sm font-semibold text-slate-950 shadow-[0_16px_34px_rgba(18,121,255,0.22)]">
+                <button className="rounded-2xl border border-cyan-300/30 bg-[linear-gradient(135deg,#1ee3ff,#1c7eff)] px-5 py-3 text-sm font-semibold text-slate-950 shadow-[0_16px_34px_rgba(18,121,255,0.22)] transition hover:scale-[1.02] active:scale-[0.98]">
                   {editingOpportunityId ? "Save changes" : "Publish opportunity"}
                 </button>
               </form>
@@ -717,10 +717,10 @@ export function AdminSection() {
                           image_url_text: item.image_url?.startsWith("http") ? item.image_url : "",
                         });
                         setMessage(`Editing ${item.title}. Update the fields and save changes.`);
-                      }} className="rounded-2xl border border-cyan-300/25 bg-white/10 px-4 py-2 text-sm font-medium text-white hover:bg-white/15">
+                      }} className="rounded-2xl border border-cyan-300/25 bg-white/10 px-4 py-2 text-sm font-medium text-white transition hover:bg-white/15 active:scale-[0.98]">
                         Edit
                       </button>
-                      <button onClick={() => destroy(`/admin/opportunities/${item.id}`, "Opportunity deleted successfully.")} className="rounded-2xl border border-red-400/30 bg-red-500/14 px-4 py-2 text-sm font-medium text-red-100 hover:bg-red-500/20">
+                      <button onClick={() => destroy(`/admin/opportunities/${item.id}`, "Opportunity deleted successfully.")} className="rounded-2xl border border-red-400/30 bg-red-500/14 px-4 py-2 text-sm font-medium text-red-100 transition hover:bg-red-500/20 active:scale-[0.98]">
                         Delete
                       </button>
                     </div>
@@ -753,7 +753,7 @@ export function AdminSection() {
                   <input value={eventDraft.end_at} onChange={(event) => setEventDraft((current: any) => ({ ...current, end_at: event.target.value }))} type="datetime-local" className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white" />
                 </div>
                 <input value={eventDraft.registration_url} onChange={(event) => setEventDraft((current: any) => ({ ...current, registration_url: event.target.value }))} placeholder="Registration URL" className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white" />
-                <button className="rounded-2xl bg-white px-5 py-3 text-sm font-semibold text-slate-950">{editingEventId ? "Save event" : "Publish event"}</button>
+                <button className="rounded-2xl bg-white px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-slate-100 active:scale-[0.98]">{editingEventId ? "Save event" : "Publish event"}</button>
               </form>
               <div className="space-y-4">
                 {events.map((item) => (
@@ -777,10 +777,10 @@ export function AdminSection() {
                           registration_url: item.registration_url ?? "",
                         });
                         setMessage(`Editing ${item.title}.`);
-                      }} className="rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-white">
+                      }} className="rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-white transition hover:bg-white/15 active:scale-[0.98]">
                         Edit
                       </button>
-                      <button onClick={() => destroy(`/admin/events/${item.id}`, "Event deleted successfully.")} className="rounded-2xl border border-red-400/20 bg-red-500/10 px-4 py-2 text-sm text-red-200">
+                      <button onClick={() => destroy(`/admin/events/${item.id}`, "Event deleted successfully.")} className="rounded-2xl border border-red-400/20 bg-red-500/10 px-4 py-2 text-sm text-red-200 transition hover:bg-red-500/20 active:scale-[0.98]">
                         Delete
                       </button>
                     </div>
@@ -797,7 +797,7 @@ export function AdminSection() {
                 <input value={newsletterDraft.title} onChange={(event) => setNewsletterDraft((current: any) => ({ ...current, title: event.target.value }))} placeholder="Title" className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white" />
                 <textarea value={newsletterDraft.summary} onChange={(event) => setNewsletterDraft((current: any) => ({ ...current, summary: event.target.value }))} placeholder="Summary" rows={3} className="w-full rounded-3xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white" />
                 <textarea value={newsletterDraft.content} onChange={(event) => setNewsletterDraft((current: any) => ({ ...current, content: event.target.value }))} placeholder="Content" rows={7} className="w-full rounded-3xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white" />
-                <button className="rounded-2xl bg-white px-5 py-3 text-sm font-semibold text-slate-950">{editingNewsletterId ? "Save newsletter" : "Publish newsletter"}</button>
+                <button className="rounded-2xl bg-white px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-slate-100 active:scale-[0.98]">{editingNewsletterId ? "Save newsletter" : "Publish newsletter"}</button>
               </form>
               <div className="space-y-4">
                 {newsletters.map((item) => (
@@ -811,10 +811,10 @@ export function AdminSection() {
                         setEditingNewsletterId(item.id);
                         setNewsletterDraft({ title: item.title ?? "", summary: item.summary ?? "", content: item.content ?? "" });
                         setMessage(`Editing ${item.title}.`);
-                      }} className="rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-white">
+                      }} className="rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-white transition hover:bg-white/15 active:scale-[0.98]">
                         Edit
                       </button>
-                      <button onClick={() => destroy(`/admin/newsletters/${item.id}`, "Newsletter deleted successfully.")} className="rounded-2xl border border-red-400/20 bg-red-500/10 px-4 py-2 text-sm text-red-200">
+                      <button onClick={() => destroy(`/admin/newsletters/${item.id}`, "Newsletter deleted successfully.")} className="rounded-2xl border border-red-400/20 bg-red-500/10 px-4 py-2 text-sm text-red-200 transition hover:bg-red-500/20 active:scale-[0.98]">
                         Delete
                       </button>
                     </div>
@@ -834,7 +834,7 @@ export function AdminSection() {
                 </div>
                 <input value={testimonialDraft.company} onChange={(event) => setTestimonialDraft((current: any) => ({ ...current, company: event.target.value }))} placeholder="Company" className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white" />
                 <textarea value={testimonialDraft.quote} onChange={(event) => setTestimonialDraft((current: any) => ({ ...current, quote: event.target.value }))} placeholder="Quote" rows={4} className="w-full rounded-3xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white" />
-                <button className="rounded-2xl bg-white px-5 py-3 text-sm font-semibold text-slate-950">{editingTestimonialId ? "Save testimonial" : "Publish testimonial"}</button>
+                <button className="rounded-2xl bg-white px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-slate-100 active:scale-[0.98]">{editingTestimonialId ? "Save testimonial" : "Publish testimonial"}</button>
               </form>
               <div className="space-y-4">
                 {testimonials.map((item) => (
@@ -848,10 +848,10 @@ export function AdminSection() {
                         setEditingTestimonialId(item.id);
                         setTestimonialDraft({ name: item.name ?? "", role: item.role ?? "", company: item.company ?? "", quote: item.quote ?? "" });
                         setMessage(`Editing ${item.name}.`);
-                      }} className="rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-white">
+                      }} className="rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-white transition hover:bg-white/15 active:scale-[0.98]">
                         Edit
                       </button>
-                      <button onClick={() => destroy(`/admin/testimonials/${item.id}`, "Testimonial deleted successfully.")} className="rounded-2xl border border-red-400/20 bg-red-500/10 px-4 py-2 text-sm text-red-200">
+                      <button onClick={() => destroy(`/admin/testimonials/${item.id}`, "Testimonial deleted successfully.")} className="rounded-2xl border border-red-400/20 bg-red-500/10 px-4 py-2 text-sm text-red-200 transition hover:bg-red-500/20 active:scale-[0.98]">
                         Delete
                       </button>
                     </div>
@@ -878,7 +878,7 @@ export function AdminSection() {
                   <input value={groupDraft.region} onChange={(event) => setGroupDraft((current: any) => ({ ...current, region: event.target.value }))} placeholder="Region" className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white" />
                   <input value={groupDraft.contact_info} onChange={(event) => setGroupDraft((current: any) => ({ ...current, contact_info: event.target.value }))} placeholder="Contact info" className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white" />
                 </div>
-                <button className="rounded-2xl bg-white px-5 py-3 text-sm font-semibold text-slate-950">{editingGroupId ? "Save group" : "Publish group"}</button>
+                <button className="rounded-2xl bg-white px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-slate-100 active:scale-[0.98]">{editingGroupId ? "Save group" : "Publish group"}</button>
               </form>
               <div className="space-y-4">
                 {groups.map((item) => (
@@ -893,10 +893,10 @@ export function AdminSection() {
                         setEditingGroupId(item.id);
                         setGroupDraft({ name: item.name ?? "", type: item.type ?? "community", description: item.description ?? "", region: item.region ?? "", contact_info: item.contact_info ?? "", active: item.active ?? true });
                         setMessage(`Editing ${item.name}.`);
-                      }} className="rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-white">
+                      }} className="rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-white transition hover:bg-white/15 active:scale-[0.98]">
                         Edit
                       </button>
-                      <button onClick={() => destroy(`/admin/groups/${item.id}`, "Group deleted successfully.")} className="rounded-2xl border border-red-400/20 bg-red-500/10 px-4 py-2 text-sm text-red-200">
+                      <button onClick={() => destroy(`/admin/groups/${item.id}`, "Group deleted successfully.")} className="rounded-2xl border border-red-400/20 bg-red-500/10 px-4 py-2 text-sm text-red-200 transition hover:bg-red-500/20 active:scale-[0.98]">
                         Delete
                       </button>
                     </div>
@@ -927,7 +927,7 @@ export function AdminSection() {
                   <input value={locationDraft.email} onChange={(event) => setLocationDraft((current: any) => ({ ...current, email: event.target.value }))} placeholder="Email" className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white" />
                 </div>
                 <input value={locationDraft.directions_url} onChange={(event) => setLocationDraft((current: any) => ({ ...current, directions_url: event.target.value }))} placeholder="Directions URL" className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white" />
-                <button className="rounded-2xl bg-white px-5 py-3 text-sm font-semibold text-slate-950">{editingLocationId ? "Save location" : "Publish location"}</button>
+                <button className="rounded-2xl bg-white px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-slate-100 active:scale-[0.98]">{editingLocationId ? "Save location" : "Publish location"}</button>
               </form>
               <div className="space-y-4">
                 {locations.map((item) => (
@@ -953,10 +953,10 @@ export function AdminSection() {
                           active: item.active ?? true,
                         });
                         setMessage(`Editing ${item.name}.`);
-                      }} className="rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-white">
+                      }} className="rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-white transition hover:bg-white/15 active:scale-[0.98]">
                         Edit
                       </button>
-                      <button onClick={() => destroy(`/admin/locations/${item.id}`, "Location deleted successfully.")} className="rounded-2xl border border-red-400/20 bg-red-500/10 px-4 py-2 text-sm text-red-200">
+                      <button onClick={() => destroy(`/admin/locations/${item.id}`, "Location deleted successfully.")} className="rounded-2xl border border-red-400/20 bg-red-500/10 px-4 py-2 text-sm text-red-200 transition hover:bg-red-500/20 active:scale-[0.98]">
                         Delete
                       </button>
                     </div>
@@ -1037,7 +1037,7 @@ export function TrackerSection() {
           <input name="result" placeholder="Result" className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white" />
           <textarea name="notes" rows={4} placeholder="Notes" className="w-full rounded-3xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white" />
           {message ? <div className="rounded-2xl border border-cyan-300/15 bg-cyan-400/8 px-4 py-3 text-sm text-cyan-50">{message}</div> : null}
-          <button className="rounded-2xl bg-white px-5 py-3 text-sm font-semibold text-slate-950">Save tracker entry</button>
+          <button className="rounded-2xl bg-white px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-slate-100 active:scale-[0.98]">Save tracker entry</button>
         </form>
         <div className="space-y-4">
           {items.length ? items.map((item) => (
@@ -1172,7 +1172,7 @@ export function ProfileSection() {
             <div className="text-sm leading-7 text-slate-300">{data.profile.bio || "Add your story and career focus to strengthen your profile."}</div>
             <form onSubmit={handleAvatarUpload} className="space-y-3">
               <input name="avatar" type="file" accept="image/*" className="block w-full text-sm text-slate-300" />
-              <button className="rounded-2xl bg-white px-4 py-2 text-sm font-semibold text-slate-950">Upload photo</button>
+              <button className="rounded-2xl bg-white px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-slate-100 active:scale-[0.98]">Upload photo</button>
             </form>
           </div>
           <form onSubmit={handleProfileSave} className="space-y-4 rounded-[28px] border border-white/10 bg-white/5 p-6">
@@ -1199,7 +1199,7 @@ export function ProfileSection() {
             <textarea name="skills_text" defaultValue={data.profile.skills_text ?? ""} rows={3} placeholder="Skills, comma separated" className="w-full rounded-3xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white" />
             <textarea name="interests_text" defaultValue={data.profile.interests_text ?? ""} rows={3} placeholder="Interests, comma separated" className="w-full rounded-3xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white" />
             {message ? <div className="rounded-2xl border border-cyan-300/15 bg-cyan-400/8 px-4 py-3 text-sm text-cyan-50">{message}</div> : null}
-            <button className="rounded-2xl bg-white px-5 py-3 text-sm font-semibold text-slate-950">Save profile</button>
+            <button className="rounded-2xl bg-white px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-slate-100 active:scale-[0.98]">Save profile</button>
           </form>
         </div>
       ) : (
