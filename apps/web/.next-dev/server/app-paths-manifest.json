@@ -1,0 +1,11 @@
+{
+  "/page": "app/page.js",
+  "/events/page": "app/events/page.js",
+  "/auth/sign-in/page": "app/auth/sign-in/page.js",
+  "/dashboard/page": "app/dashboard/page.js",
+  "/about/page": "app/about/page.js",
+  "/opportunities/page": "app/opportunities/page.js",
+  "/admin/page": "app/admin/page.js",
+  "/alumni/page": "app/alumni/page.js",
+  "/resources/page": "app/resources/page.js"
+}
