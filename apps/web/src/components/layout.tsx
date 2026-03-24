@@ -20,7 +20,7 @@ import {
 import { ReactNode, useEffect, useMemo, useRef, useState } from "react";
 
 import { NewsletterSignupForm } from "@/components/forms";
-import { clientApi, resolveAssetUrl } from "@/lib/client-api";
+import { clientApi, resolveAssetUrl, setStoredAccessToken } from "@/lib/client-api";
 import type { MeResponse } from "@/lib/types";
 
 const logoUrl =
@@ -234,6 +234,7 @@ export function SiteShell({ children }: { children: ReactNode }) {
 
   async function logout() {
     await clientApi("/auth/logout", { method: "POST" }).catch(() => undefined);
+    setStoredAccessToken(null);
     setMe(null);
     setProfileOpen(false);
     window.location.href = "/";

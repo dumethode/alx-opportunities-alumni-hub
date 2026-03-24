@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { FormEvent, useMemo, useState } from "react";
 
-import { API_BASE_URL, clientApi } from "@/lib/client-api";
+import { API_BASE_URL, clientApi, setStoredAccessToken } from "@/lib/client-api";
 
 type ResumeEntry = { [key: string]: string };
 
@@ -100,7 +100,7 @@ export function AuthForm({ mode }: { mode: "sign-in" | "sign-up" }) {
     try {
       const email = String(form.get("email") || "").trim().toLowerCase();
       if (mode === "sign-up") {
-        await clientApi("/auth/register", {
+        const response = await clientApi<{ access_token: string }>("/auth/register", {
           method: "POST",
           bodyJson: {
             full_name: form.get("full_name"),
@@ -108,18 +108,21 @@ export function AuthForm({ mode }: { mode: "sign-in" | "sign-up" }) {
             password: form.get("password"),
           },
         });
+        setStoredAccessToken(response.access_token);
       } else {
-        await clientApi("/auth/login", {
+        const response = await clientApi<{ access_token: string }>("/auth/login", {
           method: "POST",
           bodyJson: {
             email,
             password: form.get("password"),
           },
         });
+        setStoredAccessToken(response.access_token);
       }
       router.push("/dashboard");
       router.refresh();
     } catch (err) {
+      setStoredAccessToken(null);
       const detail = err instanceof Error ? err.message : "Unable to continue";
       setError(detail === "Invalid credentials" ? "Email or password is incorrect." : detail);
     } finally {

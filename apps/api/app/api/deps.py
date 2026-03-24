@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import Cookie, Depends, HTTPException, status
+from fastapi import Cookie, Depends, Header, HTTPException, status
 from jose import JWTError, jwt
 from sqlalchemy.orm import Session
 
@@ -22,10 +22,16 @@ def _decode_token(token: str) -> dict:
 def get_current_user(
     db: DbDep,
     access_token: Annotated[str | None, Cookie(alias="access_token")] = None,
+    authorization: Annotated[str | None, Header()] = None,
 ) -> User:
-    if not access_token:
+    bearer_token = None
+    if authorization and authorization.lower().startswith("bearer "):
+        bearer_token = authorization.split(" ", 1)[1].strip()
+
+    token = access_token or bearer_token
+    if not token:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication required")
-    payload = _decode_token(access_token)
+    payload = _decode_token(token)
     user = db.query(User).filter(User.id == int(payload["sub"])).first()
     if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found")
@@ -36,4 +42,3 @@ def get_admin_user(current_user: Annotated[User, Depends(get_current_user)]) -> 
     if current_user.role != UserRole.ADMIN:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Admin access required")
     return current_user
-
