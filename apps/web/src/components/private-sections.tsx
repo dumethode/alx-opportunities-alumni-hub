@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 
 import { DocumentBuilder } from "@/components/forms";
 import { API_BASE_URL, clientApi, getStoredAccessToken, resolveAssetUrl } from "@/lib/client-api";
@@ -165,7 +165,8 @@ export function ServicesSection() {
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const form = new FormData(event.currentTarget);
+    const formElement = event.currentTarget;
+    const form = new FormData(formElement);
     const endpoint = String(form.get("flow"));
     const body =
       endpoint === "mentorship-bookings"
@@ -187,7 +188,7 @@ export function ServicesSection() {
     try {
       const response = await clientApi<{ message: string }>(route, { method: "POST", bodyJson: body });
       setMessage(response.message);
-      event.currentTarget.reset();
+      formElement.reset();
     } catch {
       setMessage("Something went wrong. Please try again.");
     }
@@ -288,6 +289,8 @@ export function AdminSection() {
   const [locations, setLocations] = useState<any[]>([]);
   const [editingOpportunityId, setEditingOpportunityId] = useState<number | null>(null);
   const [editingEventId, setEditingEventId] = useState<number | null>(null);
+  const descriptionRef = useRef<HTMLDivElement>(null);
+  const [descriptionSyncKey, setDescriptionSyncKey] = useState(0);
   const [editingNewsletterId, setEditingNewsletterId] = useState<number | null>(null);
   const [editingTestimonialId, setEditingTestimonialId] = useState<number | null>(null);
   const [editingGroupId, setEditingGroupId] = useState<number | null>(null);
@@ -370,6 +373,12 @@ export function AdminSection() {
     loadAdminData();
   }, []);
 
+  useEffect(() => {
+    if (descriptionRef.current) {
+      descriptionRef.current.innerHTML = opportunityDraft.description || "";
+    }
+  }, [descriptionSyncKey, editingOpportunityId]);
+
   async function submitOpportunity(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const formElement = event.currentTarget;
@@ -406,6 +415,7 @@ export function AdminSection() {
       setMessage(editingOpportunityId ? "Opportunity updated successfully." : "Opportunity created successfully.");
       setEditingOpportunityId(null);
       setOpportunityDraft(blankOpportunity);
+      setDescriptionSyncKey((k) => k + 1);
       formElement.reset();
       await loadAdminData();
     } catch (error) {
@@ -632,15 +642,16 @@ export function AdminSection() {
                     <button type="button" onClick={() => formatCommand("removeFormat")} className="rounded-xl border border-white/10 bg-white/10 px-3 py-1.5 text-sm text-white">Clear</button>
                   </div>
                   <div
+                    ref={descriptionRef}
                     contentEditable
                     suppressContentEditableWarning
-                    onInput={(event) =>
+                    onInput={(event) => {
+                      const html = (event.currentTarget as HTMLDivElement).innerHTML;
                       setOpportunityDraft((current: any) => ({
                         ...current,
-                        description: (event.currentTarget as HTMLDivElement).innerHTML,
-                      }))
-                    }
-                    dangerouslySetInnerHTML={{ __html: opportunityDraft.description || "" }}
+                        description: html,
+                      }));
+                    }}
                     className="min-h-[220px] rounded-3xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white focus:outline-none"
                   />
                   <input type="hidden" name="description" value={opportunityDraft.description} required />
@@ -975,7 +986,8 @@ export function TrackerSection() {
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const form = new FormData(event.currentTarget);
+    const formElement = event.currentTarget;
+    const form = new FormData(formElement);
     try {
       const response = await clientApi<{ message: string }>("/tracker", {
         method: "POST",
@@ -993,7 +1005,7 @@ export function TrackerSection() {
         },
       });
       setMessage(response.message);
-      event.currentTarget.reset();
+      formElement.reset();
       const data = await clientApi<{ items: any[] }>("/tracker");
       setItems(data.items);
     } catch {
@@ -1117,18 +1129,28 @@ export function ProfileSection() {
   async function handleAvatarUpload(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
+    setMessage("Uploading photo...");
     try {
+      const token = getStoredAccessToken();
       const response = await fetch(`${API_BASE_URL}/profile/avatar`, {
         method: "POST",
         credentials: "include",
+        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
         body: form,
       });
-      if (!response.ok) throw new Error();
+      if (!response.ok) {
+        const contentType = response.headers.get("content-type") ?? "";
+        if (contentType.includes("application/json")) {
+          const payload = await response.json();
+          throw new Error(payload.detail ?? "Upload failed. Please try again.");
+        }
+        throw new Error(`Upload failed (${response.status}). Please try again.`);
+      }
       const refreshed = await clientApi("/profile");
       setData(refreshed);
-      setMessage("Profile image uploaded.");
-    } catch {
-      setMessage("Could not upload profile image.");
+      setMessage("Profile image uploaded successfully.");
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Could not upload profile image.");
     }
   }
 
