@@ -8,7 +8,7 @@ class Settings(BaseSettings):
     access_token_expire_minutes: int = 60
     refresh_token_expire_minutes: int = 10080
     database_url: str = "sqlite:///./alx_hub.db"
-    cors_origins: str = "http://localhost:3000"
+    cors_origins: str = "http://localhost:3000,https://alxafrica.vercel.app"
     cookie_secure: bool = False
     cookie_samesite: str = "lax"
     cookie_domain: str | None = None
