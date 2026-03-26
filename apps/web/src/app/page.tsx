@@ -25,7 +25,7 @@ export default async function HomePage() {
               </div>
               <div className="max-w-3xl space-y-4">
                 <h1 className="text-4xl font-semibold leading-tight tracking-tight text-white md:text-6xl">
-                  Opportunities, alumni connections, and support services in one polished hub.
+                  Find open opportunities and upcoming events.
                 </h1>
                 <HeroSlides
                   items={[
