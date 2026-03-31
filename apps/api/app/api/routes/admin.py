@@ -101,9 +101,15 @@ def create_opportunity(
     category = db.query(OpportunityCategory).filter(OpportunityCategory.slug == category_slug).first()
     if not category:
         raise HTTPException(status_code=404, detail="Category not found")
+    base_slug = slugify(title)
+    slug = base_slug
+    counter = 1
+    while db.query(Opportunity).filter(Opportunity.slug == slug).first():
+        slug = f"{base_slug}-{counter}"
+        counter += 1
     item = Opportunity(
         title=title,
-        slug=slugify(title),
+        slug=slug,
         organization=organization,
         category_id=category.id,
         excerpt=excerpt,
@@ -153,7 +159,13 @@ def update_opportunity(
         raise HTTPException(status_code=404, detail="Category not found")
 
     item.title = title
-    item.slug = slugify(title)
+    base_slug = slugify(title)
+    slug = base_slug
+    counter = 1
+    while db.query(Opportunity).filter(Opportunity.slug == slug, Opportunity.id != opportunity_id).first():
+        slug = f"{base_slug}-{counter}"
+        counter += 1
+    item.slug = slug
     item.organization = organization
     item.category_id = category.id
     item.excerpt = excerpt
