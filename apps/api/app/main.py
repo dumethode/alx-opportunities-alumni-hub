@@ -12,9 +12,12 @@ from app.seeds.seed import seed_database
 
 
 uploads_dir = Path("uploads")
-uploads_dir.mkdir(exist_ok=True)
-(uploads_dir / "avatars").mkdir(exist_ok=True)
-(uploads_dir / "opportunities").mkdir(exist_ok=True)
+try:
+    uploads_dir.mkdir(exist_ok=True)
+    (uploads_dir / "avatars").mkdir(exist_ok=True)
+    (uploads_dir / "opportunities").mkdir(exist_ok=True)
+except OSError:
+    pass
 
 
 app = FastAPI(
@@ -62,5 +65,6 @@ def health() -> dict[str, str]:
     return {"status": "ok"}
 
 
-app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
+if uploads_dir.exists():
+    app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 app.include_router(api_router, prefix="/api/v1")
