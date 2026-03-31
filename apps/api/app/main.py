@@ -27,6 +27,26 @@ app = FastAPI(
     description="Backend API for the ALX opportunities and alumni community platform.",
 )
 
+
+# IMPORTANT: this must be registered BEFORE add_middleware(CORSMiddleware).
+# Starlette's add_middleware inserts at index 0 each time, so the LAST
+# registered middleware becomes the outermost layer. By registering this
+# error-catcher first and CORS second, CORS ends up wrapping this middleware,
+# so error responses produced here flow back through CORS and receive the
+# Access-Control-Allow-Origin header. Without this, unhandled exceptions
+# bubble all the way out to ServerErrorMiddleware (outermost of all), which
+# returns a 500 with no CORS headers and the browser reports a CORS block.
+@app.middleware("http")
+async def catch_all_exceptions(request: Request, call_next):
+    try:
+        return await call_next(request)
+    except Exception:
+        return JSONResponse(
+            status_code=500,
+            content={"detail": "An unexpected error occurred. Please try again."},
+        )
+
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[origin.strip() for origin in settings.cors_origins.split(",") if origin.strip()],
@@ -34,14 +54,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-
-@app.exception_handler(Exception)
-async def global_exception_handler(request: Request, exc: Exception) -> JSONResponse:
-    return JSONResponse(
-        status_code=500,
-        content={"detail": "An unexpected error occurred. Please try again."},
-    )
 
 
 def ensure_runtime_columns() -> None:
