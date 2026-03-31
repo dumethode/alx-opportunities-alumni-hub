@@ -1,5 +1,3 @@
-from sqlalchemy.orm import Session
-
 from app.models.models import CommunityGroup, Event, HubLocation, Newsletter, Opportunity, Testimonial
 
 
@@ -9,19 +7,19 @@ def serialize_opportunity(item: Opportunity) -> dict:
         "title": item.title,
         "slug": item.slug,
         "organization": item.organization,
-        "category": item.category.name,
+        "category": item.category.name if item.category else None,
         "excerpt": item.excerpt,
         "description": item.description,
         "location": item.location,
         "department": item.department,
         "compensation": item.compensation,
         "opportunity_type": item.opportunity_type,
-        "deadline": item.deadline,
+        "deadline": item.deadline.isoformat() if item.deadline else None,
         "deadline_label": item.deadline_label,
         "apply_url": item.apply_url,
         "image_url": item.image_url,
         "featured": item.featured,
-        "views_count": len(item.views),
+        "views_count": len(item.views) if item.views is not None else 0,
     }
 
 
@@ -30,13 +28,13 @@ def serialize_event(item: Event) -> dict:
         "id": item.id,
         "title": item.title,
         "slug": item.slug,
-        "category": item.category.name,
+        "category": item.category.name if item.category else None,
         "summary": item.summary,
         "description": item.description,
         "venue_name": item.venue_name,
         "location_text": item.location_text,
-        "start_at": item.start_at,
-        "end_at": item.end_at,
+        "start_at": item.start_at.isoformat() if item.start_at else None,
+        "end_at": item.end_at.isoformat() if item.end_at else None,
         "status": item.status,
         "featured": item.featured,
     }
@@ -49,7 +47,7 @@ def serialize_newsletter(item: Newsletter) -> dict:
         "slug": item.slug,
         "summary": item.summary,
         "content": item.content,
-        "published_at": item.published_at,
+        "published_at": item.published_at.isoformat() if item.published_at else None,
     }
 
 

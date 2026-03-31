@@ -82,8 +82,8 @@ def list_events(db: DbDep, search: str | None = Query(default=None)) -> dict:
         "items": [serialize_event(item) for item in items],
         "counts": {
             "all": len(items),
-            "past": len([item for item in items if item.end_at < now]),
-            "upcoming": len([item for item in items if item.start_at >= now]),
+            "past": len([item for item in items if item.end_at and item.end_at < now]),
+            "upcoming": len([item for item in items if item.start_at and item.start_at >= now]),
         },
     }
 
