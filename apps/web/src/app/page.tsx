@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ArrowRight, BadgeCheck, ShieldCheck, Sparkles } from "lucide-react";
 
 import { EventCard, NewsletterCard, OpportunityCard, TestimonialCard } from "@/components/cards";
-import { AnimatedCounter, CarouselStrip, HeroAtmosphere, HeroSlides, Reveal } from "@/components/effects";
+import { AnimatedCounter, CarouselStrip, HeroAtmosphere, HeroBackdrop, HeroSlides, Reveal, RoleMarquee } from "@/components/effects";
 import { HubMap } from "@/components/map";
 import { GlassCard, SectionHeading } from "@/components/ui";
 import { api } from "@/lib/api";
@@ -16,6 +16,14 @@ export default async function HomePage() {
         <div className="grid gap-8 lg:grid-cols-[1.25fr_0.75fr]">
           <Reveal className="h-full">
           <GlassCard className="hero-glow relative overflow-hidden px-7 py-8 md:px-10 md:py-12">
+            <HeroBackdrop
+              images={[
+                { src: "/media/home/hero-1.jpg", alt: "ALX community moment 1" },
+                { src: "/media/home/highlight-1.jpg", alt: "ALX community highlight 1" },
+                { src: "/media/home/hero-3.jpg", alt: "ALX community moment 3" },
+                { src: "/media/home/highlight-3.jpg", alt: "ALX community highlight 3" },
+              ]}
+            />
             <HeroAtmosphere />
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(88,240,255,0.25),transparent_30%),linear-gradient(135deg,rgba(255,255,255,0.12),transparent_40%)]" />
             <div className="relative space-y-8">
@@ -122,6 +130,75 @@ export default async function HomePage() {
             </GlassCard>
             </Reveal>
           </div>
+        </div>
+      </section>
+
+      <section className="content-grid page-section">
+        <Reveal>
+          <SectionHeading
+            eyebrow="Career Tracks"
+            title="Explore roles that ALX learners are moving into"
+            description="A fast way to scan where your next opportunity can take you."
+          />
+        </Reveal>
+        <div className="mt-8 grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
+          <Reveal>
+            <RoleMarquee
+              title="Popular roles and categories"
+              items={[
+                "Data Analyst",
+                "Software Engineer",
+                "Product Analyst",
+                "Business Analyst",
+                "Solutions Engineer",
+                "AI Specialist",
+                "Frontend Developer",
+                "Backend Developer",
+                "DevOps Engineer",
+                "Cybersecurity Analyst",
+                "UI Designer",
+                "Project Manager",
+                "Internships",
+                "Fellowships",
+                "Scholarships",
+                "Funding",
+              ]}
+            />
+          </Reveal>
+          <Reveal delay={120}>
+            <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-1">
+              {[
+                {
+                  title: "Community moments",
+                  body: "See what the ALX network looks like in action, then join opportunities that keep you moving.",
+                  image: "/media/home/highlight-2.jpg",
+                },
+                {
+                  title: "Events with momentum",
+                  body: "Career nights, masterclasses, and networking sessions that plug you into real people.",
+                  image: "/media/home/highlight-1.jpg",
+                },
+                {
+                  title: "Support services",
+                  body: "Mentorship bookings and supporting letters, designed to reduce application friction.",
+                  image: "/media/home/highlight-3.jpg",
+                },
+              ].map((card) => (
+                <GlassCard key={card.title} className="group relative overflow-hidden p-0">
+                  <img
+                    src={card.image}
+                    alt={card.title}
+                    className="h-52 w-full object-cover transition duration-700 group-hover:scale-[1.05]"
+                  />
+                  <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(4,27,110,0.08),rgba(4,27,110,0.82))]" />
+                  <div className="relative space-y-2 p-6">
+                    <div className="text-lg font-semibold text-white">{card.title}</div>
+                    <p className="text-sm leading-7 text-cyan-50">{card.body}</p>
+                  </div>
+                </GlassCard>
+              ))}
+            </div>
+          </Reveal>
         </div>
       </section>
 

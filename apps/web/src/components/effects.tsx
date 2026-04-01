@@ -124,3 +124,66 @@ export function HeroAtmosphere() {
     </>
   );
 }
+
+export function HeroBackdrop({
+  images,
+}: {
+  images: Array<{ src: string; alt: string }>;
+}) {
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    if (!images.length) return;
+    const interval = window.setInterval(() => {
+      setIndex((current) => (current + 1) % images.length);
+    }, 5200);
+    return () => window.clearInterval(interval);
+  }, [images.length]);
+
+  return (
+    <div className="absolute inset-0">
+      {images.map((image, imageIndex) => (
+        <img
+          key={image.src}
+          src={image.src}
+          alt={image.alt}
+          className={`absolute inset-0 h-full w-full object-cover transition duration-1000 ${
+            imageIndex === index ? "opacity-100" : "opacity-0"
+          } kenburns-slow`}
+        />
+      ))}
+      <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(4,27,110,0.72),rgba(4,10,20,0.25))]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(18,91,255,0.28),transparent_45%)]" />
+    </div>
+  );
+}
+
+export function RoleMarquee({
+  title,
+  items,
+}: {
+  title: string;
+  items: string[];
+}) {
+  const track = [...items, ...items];
+  return (
+    <div className="rounded-[30px] border border-[color:var(--alx-border)] bg-[var(--alx-panel)] px-6 py-6 shadow-[0_18px_48px_rgba(9,49,90,0.08)]">
+      <div className="text-sm font-semibold text-[var(--alx-text-strong)]">{title}</div>
+      <div className="mt-4 alx-marquee">
+        <div className="alx-marquee-track">
+          {track.map((item, index) => (
+            <span
+              key={`${item}-${index}`}
+              className="rounded-full border border-[color:var(--alx-border)] bg-[var(--alx-pill)] px-4 py-2 text-sm font-medium text-[var(--alx-text-strong)] transition hover:bg-[var(--alx-pill-active)]"
+            >
+              {item}
+            </span>
+          ))}
+        </div>
+      </div>
+      <div className="mt-3 text-sm text-[var(--alx-text-muted)]">
+        Tap a category on Opportunities to filter faster.
+      </div>
+    </div>
+  );
+}
