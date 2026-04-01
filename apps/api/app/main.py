@@ -1,5 +1,7 @@
 from pathlib import Path
 
+import traceback
+
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -49,6 +51,7 @@ async def catch_all_exceptions(request: Request, call_next):
             content={"detail": exc.detail},
         )
     except Exception:
+        traceback.print_exc()
         return JSONResponse(
             status_code=500,
             content={"detail": "An unexpected error occurred. Please try again."},
@@ -66,6 +69,12 @@ app.add_middleware(
 
 def ensure_runtime_columns() -> None:
     inspector = inspect(engine)
+    dialect = engine.dialect.name
+
+    def add_column(table: str, column: str, ddl: str) -> None:
+        # Best-effort runtime migrations for hosted environments.
+        connection.execute(text(f"ALTER TABLE {table} ADD COLUMN {column} {ddl}"))
+
     with engine.begin() as connection:
         if "profiles" in inspector.get_table_names():
             profile_columns = {column["name"] for column in inspector.get_columns("profiles")}
@@ -79,6 +88,28 @@ def ensure_runtime_columns() -> None:
                 connection.execute(text("ALTER TABLE opportunities ADD COLUMN image_url VARCHAR(255)"))
             if "deadline_label" not in opportunity_columns:
                 connection.execute(text("ALTER TABLE opportunities ADD COLUMN deadline_label VARCHAR(80)"))
+            if "featured" not in opportunity_columns:
+                default = "false" if dialect != "sqlite" else "0"
+                add_column("opportunities", "featured", f"BOOLEAN DEFAULT {default}")
+            if "published_at" not in opportunity_columns:
+                add_column("opportunities", "published_at", "TIMESTAMP")
+                # Populate existing rows to keep ordering stable.
+                connection.execute(text("UPDATE opportunities SET published_at = CURRENT_TIMESTAMP WHERE published_at IS NULL"))
+            if "status" not in opportunity_columns:
+                add_column("opportunities", "status", "VARCHAR(40) DEFAULT 'published'")
+        if "events" in inspector.get_table_names():
+            event_columns = {column["name"] for column in inspector.get_columns("events")}
+            if "featured" not in event_columns:
+                default = "false" if dialect != "sqlite" else "0"
+                add_column("events", "featured", f"BOOLEAN DEFAULT {default}")
+        if "testimonials" in inspector.get_table_names():
+            testimonial_columns = {column["name"] for column in inspector.get_columns("testimonials")}
+            if "approved" not in testimonial_columns:
+                default = "true" if dialect != "sqlite" else "1"
+                add_column("testimonials", "approved", f"BOOLEAN DEFAULT {default}")
+            if "featured" not in testimonial_columns:
+                default = "false" if dialect != "sqlite" else "0"
+                add_column("testimonials", "featured", f"BOOLEAN DEFAULT {default}")
 
 
 @app.on_event("startup")
