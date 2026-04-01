@@ -15,6 +15,52 @@ from app.services.storage import store_upload
 
 router = APIRouter()
 
+OPPORTUNITY_LIMITS = {
+    "title": 180,
+    "slug": 180,
+    "organization": 180,
+    "excerpt": 280,
+    "location": 120,
+    "department": 120,
+    "compensation": 120,
+    "opportunity_type": 120,
+    "apply_url": 255,
+    "deadline_label": 80,
+    "image_url": 255,
+}
+
+
+def _clean_str(value: str | None) -> str | None:
+    if value is None:
+        return None
+    cleaned = str(value).strip()
+    return cleaned or None
+
+
+def _ensure_max(field: str, value: str | None, max_len: int) -> str | None:
+    if value is None:
+        return None
+    if len(value) <= max_len:
+        return value
+    raise HTTPException(status_code=400, detail=f"{field.replace('_', ' ').capitalize()} is too long (max {max_len} characters).")
+
+
+def _build_unique_slug(db: DbDep, title: str, *, ignore_id: int | None = None) -> str:
+    base = slugify(title) or "opportunity"
+    base = base[: OPPORTUNITY_LIMITS["slug"]]
+    slug = base
+    counter = 1
+    while True:
+        query = db.query(Opportunity).filter(Opportunity.slug == slug)
+        if ignore_id is not None:
+            query = query.filter(Opportunity.id != ignore_id)
+        if not query.first():
+            return slug
+        suffix = f"-{counter}"
+        trimmed = base[: max(1, OPPORTUNITY_LIMITS["slug"] - len(suffix))]
+        slug = f"{trimmed}{suffix}"
+        counter += 1
+
 
 @router.get("/overview")
 def overview(db: DbDep, admin_user: User = Depends(get_admin_user)) -> dict:
@@ -113,15 +159,23 @@ def create_opportunity(
     image_url_text: str | None = Form(default=None),
     image: UploadFile | None = File(default=None),
 ) -> MessageResponse:
+    title = _ensure_max("title", _clean_str(title), OPPORTUNITY_LIMITS["title"]) or ""
+    organization = _ensure_max("organization", _clean_str(organization), OPPORTUNITY_LIMITS["organization"]) or ""
+    excerpt = _ensure_max("excerpt", _clean_str(excerpt), OPPORTUNITY_LIMITS["excerpt"]) or ""
+    description = str(description or "")
+    location = _ensure_max("location", _clean_str(location), OPPORTUNITY_LIMITS["location"])
+    department = _ensure_max("department", _clean_str(department), OPPORTUNITY_LIMITS["department"])
+    compensation = _ensure_max("compensation", _clean_str(compensation), OPPORTUNITY_LIMITS["compensation"])
+    opportunity_type = _ensure_max("type", _clean_str(opportunity_type), OPPORTUNITY_LIMITS["opportunity_type"])
+    apply_url = _ensure_max("apply url", _clean_str(apply_url), OPPORTUNITY_LIMITS["apply_url"])
+    deadline_label = _ensure_max("deadline label", _clean_str(deadline_label), OPPORTUNITY_LIMITS["deadline_label"])
+    image_url_text = _ensure_max("image link", _clean_str(image_url_text), OPPORTUNITY_LIMITS["image_url"])
+
     category = db.query(OpportunityCategory).filter(OpportunityCategory.slug == category_slug).first()
     if not category:
         raise HTTPException(status_code=404, detail="Category not found")
-    base_slug = slugify(title)
-    slug = base_slug
-    counter = 1
-    while db.query(Opportunity).filter(Opportunity.slug == slug).first():
-        slug = f"{base_slug}-{counter}"
-        counter += 1
+    slug = _build_unique_slug(db, title)
+
     item = Opportunity(
         title=title,
         slug=slug,
@@ -137,7 +191,7 @@ def create_opportunity(
         featured=featured,
         deadline=datetime.fromisoformat(deadline) if deadline else None,
         deadline_label=deadline_label or None,
-        image_url=store_opportunity_image(image) or (image_url_text.strip() if image_url_text else None),
+        image_url=_ensure_max("image", store_opportunity_image(image) or image_url_text, OPPORTUNITY_LIMITS["image_url"]),
         created_by=admin_user.id,
     )
     try:
@@ -170,6 +224,18 @@ def update_opportunity(
     image_url_text: str | None = Form(default=None),
     image: UploadFile | None = File(default=None),
 ) -> MessageResponse:
+    title = _ensure_max("title", _clean_str(title), OPPORTUNITY_LIMITS["title"]) or ""
+    organization = _ensure_max("organization", _clean_str(organization), OPPORTUNITY_LIMITS["organization"]) or ""
+    excerpt = _ensure_max("excerpt", _clean_str(excerpt), OPPORTUNITY_LIMITS["excerpt"]) or ""
+    description = str(description or "")
+    location = _ensure_max("location", _clean_str(location), OPPORTUNITY_LIMITS["location"])
+    department = _ensure_max("department", _clean_str(department), OPPORTUNITY_LIMITS["department"])
+    compensation = _ensure_max("compensation", _clean_str(compensation), OPPORTUNITY_LIMITS["compensation"])
+    opportunity_type = _ensure_max("type", _clean_str(opportunity_type), OPPORTUNITY_LIMITS["opportunity_type"])
+    apply_url = _ensure_max("apply url", _clean_str(apply_url), OPPORTUNITY_LIMITS["apply_url"])
+    deadline_label = _ensure_max("deadline label", _clean_str(deadline_label), OPPORTUNITY_LIMITS["deadline_label"])
+    image_url_text = _ensure_max("image link", _clean_str(image_url_text), OPPORTUNITY_LIMITS["image_url"])
+
     item = db.query(Opportunity).filter(Opportunity.id == opportunity_id).first()
     if not item:
         raise HTTPException(status_code=404, detail="Opportunity not found")
@@ -178,13 +244,7 @@ def update_opportunity(
         raise HTTPException(status_code=404, detail="Category not found")
 
     item.title = title
-    base_slug = slugify(title)
-    slug = base_slug
-    counter = 1
-    while db.query(Opportunity).filter(Opportunity.slug == slug, Opportunity.id != opportunity_id).first():
-        slug = f"{base_slug}-{counter}"
-        counter += 1
-    item.slug = slug
+    item.slug = _build_unique_slug(db, title, ignore_id=opportunity_id)
     item.organization = organization
     item.category_id = category.id
     item.excerpt = excerpt
@@ -199,9 +259,9 @@ def update_opportunity(
     item.deadline_label = deadline_label or None
     new_image_url = store_opportunity_image(image)
     if new_image_url:
-        item.image_url = new_image_url
+        item.image_url = _ensure_max("image", new_image_url, OPPORTUNITY_LIMITS["image_url"])
     elif image_url_text:
-        item.image_url = image_url_text.strip()
+        item.image_url = image_url_text
     try:
         db.commit()
         return MessageResponse(message="Opportunity updated.")

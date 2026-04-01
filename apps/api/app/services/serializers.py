@@ -1,7 +1,35 @@
+from datetime import datetime
+
+from sqlalchemy import inspect as sa_inspect
+from sqlalchemy.orm.attributes import NO_VALUE
+
 from app.models.models import CommunityGroup, Event, HubLocation, Newsletter, Opportunity, Testimonial
 
 
+def _iso(value) -> str | None:
+    if not value:
+        return None
+    if isinstance(value, datetime):
+        return value.isoformat()
+    # Defensive: tolerate legacy string values in hosted DBs.
+    if isinstance(value, str):
+        return value
+    isoformat = getattr(value, "isoformat", None)
+    return isoformat() if callable(isoformat) else str(value)
+
+
 def serialize_opportunity(item: Opportunity) -> dict:
+    views_count = 0
+    try:
+        state = sa_inspect(item)
+        attr = state.attrs.views
+        loaded = attr.loaded_value
+        if loaded is not NO_VALUE and loaded is not None:
+            views_count = len(loaded)
+    except Exception:
+        # Never fail serialization for admin/public lists.
+        views_count = 0
+
     return {
         "id": item.id,
         "title": item.title,
@@ -14,12 +42,12 @@ def serialize_opportunity(item: Opportunity) -> dict:
         "department": item.department,
         "compensation": item.compensation,
         "opportunity_type": item.opportunity_type,
-        "deadline": item.deadline.isoformat() if item.deadline else None,
+        "deadline": _iso(item.deadline),
         "deadline_label": item.deadline_label,
         "apply_url": item.apply_url,
         "image_url": item.image_url,
         "featured": item.featured,
-        "views_count": len(item.views) if item.views is not None else 0,
+        "views_count": views_count,
     }
 
 
@@ -33,8 +61,8 @@ def serialize_event(item: Event) -> dict:
         "description": item.description,
         "venue_name": item.venue_name,
         "location_text": item.location_text,
-        "start_at": item.start_at.isoformat() if item.start_at else None,
-        "end_at": item.end_at.isoformat() if item.end_at else None,
+        "start_at": _iso(item.start_at),
+        "end_at": _iso(item.end_at),
         "status": item.status,
         "featured": item.featured,
     }
@@ -47,7 +75,7 @@ def serialize_newsletter(item: Newsletter) -> dict:
         "slug": item.slug,
         "summary": item.summary,
         "content": item.content,
-        "published_at": item.published_at.isoformat() if item.published_at else None,
+        "published_at": _iso(item.published_at),
     }
 
 
