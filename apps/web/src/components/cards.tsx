@@ -4,19 +4,21 @@ import { CalendarDays, Clock3, ExternalLink, MapPin, Sparkles } from "lucide-rea
 import { resolveAssetUrl } from "@/lib/client-api";
 import { EventItem, Newsletter, Opportunity, Testimonial } from "@/lib/types";
 import { GlassCard } from "@/components/ui";
+import { SafeImage } from "@/components/safe-image";
 
-const fallbackOpportunityImage =
-  "https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=900&q=80";
+const fallbackOpportunityImage = "/media/placeholders/opportunity-default.jpg";
 
 export function OpportunityCard({ opportunity }: { opportunity: Opportunity }) {
   const deadlineText = opportunity.deadline
     ? new Date(opportunity.deadline).toLocaleDateString()
     : opportunity.deadline_label ?? "Rolling";
+  const primaryImage = resolveAssetUrl(opportunity.image_url);
 
   return (
     <GlassCard className="group flex h-full flex-col justify-between gap-6 overflow-hidden p-0 transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_90px_rgba(10,175,255,0.18)]">
-      <img
-        src={resolveAssetUrl(opportunity.image_url) ?? fallbackOpportunityImage}
+      <SafeImage
+        src={primaryImage}
+        fallbackSrc={fallbackOpportunityImage}
         alt={opportunity.title}
         className="h-48 w-full object-cover transition duration-500 group-hover:scale-[1.03]"
       />

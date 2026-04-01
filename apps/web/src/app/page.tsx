@@ -71,6 +71,31 @@ export default async function HomePage() {
           </GlassCard>
           </Reveal>
           <div className="space-y-6">
+            <Reveal delay={40}>
+              <GlassCard className="relative overflow-hidden p-0">
+                <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(4,27,110,0.62),rgba(18,91,255,0.18))]" />
+                <div className="relative grid grid-cols-2 gap-0">
+                  {[
+                    { src: "/media/home/hero-1.jpg", alt: "ALX community moment 1" },
+                    { src: "/media/home/hero-2.jpg", alt: "ALX community moment 2" },
+                    { src: "/media/home/hero-3.jpg", alt: "ALX community moment 3" },
+                    { src: "/media/home/hero-4.jpg", alt: "ALX community moment 4" },
+                  ].map((item) => (
+                    <div key={item.src} className="group relative aspect-[4/3] overflow-hidden">
+                      <img
+                        src={item.src}
+                        alt={item.alt}
+                        className="h-full w-full object-cover transition duration-700 group-hover:scale-[1.04]"
+                      />
+                      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.18),transparent_55%)] opacity-70" />
+                    </div>
+                  ))}
+                </div>
+                <div className="absolute left-5 top-5 rounded-full border border-white/25 bg-white/15 px-4 py-2 text-xs font-semibold uppercase tracking-[0.26em] text-white backdrop-blur">
+                  ALX Moments
+                </div>
+              </GlassCard>
+            </Reveal>
             <Reveal delay={80}>
             <GlassCard className="space-y-4">
               <div className="flex items-start gap-3">
@@ -116,11 +141,38 @@ export default async function HomePage() {
           <Link href="/opportunities?category=scholarships" className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-slate-200 transition hover:bg-white/10">Scholarships</Link>
         </div>
         <div className="mt-8 grid gap-6 lg:grid-cols-3">
-          {home.featured_opportunities.map((opportunity: any) => (
-            <Reveal key={opportunity.id} delay={opportunity.id * 40}>
-              <OpportunityCard opportunity={opportunity} />
-            </Reveal>
-          ))}
+          {home.featured_opportunities.length ? (
+            home.featured_opportunities.map((opportunity: any) => (
+              <Reveal key={opportunity.id} delay={opportunity.id * 40}>
+                <OpportunityCard opportunity={opportunity} />
+              </Reveal>
+            ))
+          ) : (
+            ["Career roles", "Internships", "Scholarships"].map((label) => (
+              <Reveal key={label}>
+                <GlassCard className="group flex h-full flex-col justify-between gap-6 overflow-hidden p-0">
+                  <img
+                    src="/media/placeholders/opportunity-default.jpg"
+                    alt="ALX opportunity placeholder"
+                    className="h-48 w-full object-cover transition duration-700 group-hover:scale-[1.03]"
+                  />
+                  <div className="space-y-4 p-6">
+                    <div className="rounded-full border border-cyan-300/20 bg-cyan-300/10 px-3 py-1 text-xs text-cyan-100">
+                      {label}
+                    </div>
+                    <div className="text-xl font-semibold text-white">Opportunities are syncing</div>
+                    <p className="text-sm leading-7 text-slate-300">
+                      New featured opportunities will appear here as soon as admins publish them.
+                    </p>
+                    <Link href="/opportunities" className="inline-flex items-center gap-2 text-sm font-semibold text-cyan-200 transition hover:text-white">
+                      Browse all opportunities
+                      <ArrowRight className="h-4 w-4" />
+                    </Link>
+                  </div>
+                </GlassCard>
+              </Reveal>
+            ))
+          )}
         </div>
       </section>
 
