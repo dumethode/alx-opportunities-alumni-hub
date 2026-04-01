@@ -15,7 +15,7 @@ export default async function HomePage() {
       <section className="content-grid page-section">
         <div className="grid gap-8 lg:grid-cols-[1.25fr_0.75fr]">
           <Reveal className="h-full">
-          <GlassCard className="hero-glow relative overflow-hidden px-7 py-8 md:px-10 md:py-12">
+          <GlassCard className="on-media hero-glow relative overflow-hidden px-7 py-8 md:px-10 md:py-12">
             <HeroBackdrop
               images={[
                 { src: "/media/home/hero-1.jpg", alt: "ALX community moment 1" },
@@ -193,7 +193,7 @@ export default async function HomePage() {
                   <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(4,27,110,0.08),rgba(4,27,110,0.82))]" />
                   <div className="relative space-y-2 p-6">
                     <div className="text-lg font-semibold text-white">{card.title}</div>
-                    <p className="text-sm leading-7 text-cyan-50">{card.body}</p>
+                    <p className="text-sm leading-7 text-white/80">{card.body}</p>
                   </div>
                 </GlassCard>
               ))}

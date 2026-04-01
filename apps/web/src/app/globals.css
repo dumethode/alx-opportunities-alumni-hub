@@ -93,6 +93,46 @@ a {
   box-shadow: 0 22px 54px rgba(4, 27, 110, 0.18);
 }
 
+.on-media {
+  color: #ffffff;
+}
+
+[data-theme="light"] .on-media .text-white {
+  color: #ffffff !important;
+}
+
+[data-theme="light"] .on-media .text-slate-300,
+[data-theme="light"] .on-media .text-slate-200,
+[data-theme="light"] .on-media .text-slate-100,
+[data-theme="light"] .on-media .text-slate-400 {
+  color: rgba(255, 255, 255, 0.82) !important;
+}
+
+[data-theme="light"] .on-media .text-cyan-100,
+[data-theme="light"] .on-media .text-cyan-200,
+[data-theme="light"] .on-media .text-cyan-50 {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.on-footer {
+  color: rgba(255, 255, 255, 0.92);
+  --alx-text: rgba(255, 255, 255, 0.92);
+  --alx-text-strong: #ffffff;
+  --alx-text-muted: rgba(255, 255, 255, 0.76);
+  --alx-text-soft: rgba(255, 255, 255, 0.6);
+  --alx-accent-text: rgba(255, 255, 255, 0.92);
+  --alx-border: rgba(255, 255, 255, 0.14);
+  --alx-panel: rgba(255, 255, 255, 0.08);
+  --alx-panel-strong: rgba(255, 255, 255, 0.1);
+  --alx-panel-muted: rgba(255, 255, 255, 0.06);
+  --alx-pill: rgba(255, 255, 255, 0.1);
+  --alx-pill-active: rgba(255, 255, 255, 0.16);
+}
+
+.on-footer a {
+  color: inherit;
+}
+
 .glass-card-balanced {
   background: color-mix(in srgb, var(--alx-panel-strong) 94%, transparent);
   border-color: color-mix(in srgb, var(--alx-border) 100%, transparent);
