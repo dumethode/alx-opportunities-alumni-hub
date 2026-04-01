@@ -42,7 +42,7 @@ async def catch_all_exceptions(request: Request, call_next):
         return await call_next(request)
     except HTTPException as exc:
         # BaseHTTPMiddleware can surface HTTPExceptions that ExceptionMiddleware
-        # already processed — return them as proper responses so they flow
+        # already processed - return them as proper responses so they flow
         # through CORSMiddleware and keep their correct status codes (401/403/404).
         return JSONResponse(
             status_code=exc.status_code,

@@ -29,7 +29,7 @@ export default async function HomePage() {
             <div className="relative space-y-8">
               <div className="inline-flex items-center gap-2 rounded-full border border-cyan-300/20 bg-cyan-300/10 px-4 py-2 text-xs uppercase tracking-[0.28em] text-cyan-100">
                 <Sparkles className="h-4 w-4" />
-                Premium ALX ecosystem
+                ALX Opportunities and Alumni Hub
               </div>
               <div className="max-w-3xl space-y-4">
                 <h1 className="text-4xl font-semibold leading-tight tracking-tight text-white md:text-6xl">
@@ -121,7 +121,7 @@ export default async function HomePage() {
             <GlassCard className="space-y-4 spotlight-card">
               <div className="text-sm uppercase tracking-[0.28em] text-cyan-200">Trust promise</div>
               <p className="text-base leading-8 text-slate-100">
-                Before posting any opportunity, we first check for you regarding being legit, we are here for you.
+                Featured listings are reviewed for clarity and legitimacy before they are promoted in the hub.
               </p>
               <div className="inline-flex items-center gap-2 text-sm text-slate-300">
                 <BadgeCheck className="h-4 w-4 text-cyan-200" />

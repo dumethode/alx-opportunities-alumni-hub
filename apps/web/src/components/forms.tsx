@@ -8,7 +8,7 @@ import { API_BASE_URL, clientApi, setStoredAccessToken } from "@/lib/client-api"
 type ResumeEntry = { [key: string]: string };
 
 function fieldClass() {
-  return "w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white";
+  return "w-full rounded-2xl border border-[color:var(--alx-border)] bg-[var(--alx-panel)] px-4 py-3 text-[var(--alx-text-strong)] shadow-[0_10px_24px_rgba(4,27,110,0.06)] placeholder:text-[var(--alx-text-soft)] focus:outline-none focus:ring-4 focus:ring-[rgba(18,91,255,0.18)]";
 }
 
 function fileNameFromResponse(response: Response, fallback: string) {

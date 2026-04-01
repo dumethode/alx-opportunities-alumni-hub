@@ -39,7 +39,7 @@ export default async function OpportunityDetailPage({
             dangerouslySetInnerHTML={{ __html: opportunity.description ?? "" }}
           />
           <div className="rounded-3xl border border-white/10 bg-slate-950/50 px-5 py-4 text-sm text-slate-300">
-            Before posting any opportunity, we first check for you regarding being legit, we are here for you.
+            Featured listings are reviewed for clarity and legitimacy before they are promoted in the hub.
           </div>
           <div className="flex flex-wrap gap-4">
             {opportunity.apply_url ? (

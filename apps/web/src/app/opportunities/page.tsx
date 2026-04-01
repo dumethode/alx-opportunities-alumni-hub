@@ -36,7 +36,7 @@ export default async function OpportunitiesPage({
       />
       <GlassCard className="space-y-4">
         <div className="text-sm leading-7 text-slate-300">
-          Before posting any opportunity, we first check for you regarding being legit, we are here for you.
+          Featured listings are reviewed for clarity and legitimacy before they are promoted in the hub.
         </div>
         <div className="overflow-x-auto">
           <div className="flex min-w-max gap-3">
