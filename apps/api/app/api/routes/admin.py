@@ -2,6 +2,7 @@ from datetime import datetime
 from uuid import uuid4
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
+from sqlalchemy.exc import SQLAlchemyError
 from slugify import slugify
 
 from app.api.deps import DbDep, get_admin_user
@@ -31,8 +32,22 @@ def overview(db: DbDep, admin_user: User = Depends(get_admin_user)) -> dict:
 
 @router.get("/opportunities")
 def list_admin_opportunities(db: DbDep, admin_user: User = Depends(get_admin_user)) -> dict:
-    items = db.query(Opportunity).order_by(Opportunity.published_at.desc()).all()
-    return {"items": [serialize_opportunity(item) for item in items]}
+    try:
+        items = db.query(Opportunity).order_by(Opportunity.published_at.desc()).all()
+        return {"items": [serialize_opportunity(item) for item in items]}
+    except SQLAlchemyError as exc:
+        # Hosted DBs can occasionally drift between deploys. Fallback to id ordering and
+        # return a safe error message if that also fails.
+        db.rollback()
+        try:
+            items = db.query(Opportunity).order_by(Opportunity.id.desc()).all()
+            return {"items": [serialize_opportunity(item) for item in items]}
+        except SQLAlchemyError:
+            db.rollback()
+            raise HTTPException(
+                status_code=500,
+                detail=f"Could not load admin opportunities ({exc.__class__.__name__}). Please try again.",
+            )
 
 
 @router.get("/events")
@@ -125,9 +140,13 @@ def create_opportunity(
         image_url=store_opportunity_image(image) or (image_url_text.strip() if image_url_text else None),
         created_by=admin_user.id,
     )
-    db.add(item)
-    db.commit()
-    return MessageResponse(message="Opportunity created.")
+    try:
+        db.add(item)
+        db.commit()
+        return MessageResponse(message="Opportunity created.")
+    except SQLAlchemyError as exc:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Could not create opportunity ({exc.__class__.__name__}).")
 
 
 @router.put("/opportunities/{opportunity_id}", response_model=MessageResponse)
@@ -183,8 +202,12 @@ def update_opportunity(
         item.image_url = new_image_url
     elif image_url_text:
         item.image_url = image_url_text.strip()
-    db.commit()
-    return MessageResponse(message="Opportunity updated.")
+    try:
+        db.commit()
+        return MessageResponse(message="Opportunity updated.")
+    except SQLAlchemyError as exc:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Could not update opportunity ({exc.__class__.__name__}).")
 
 
 @router.delete("/opportunities/{opportunity_id}", response_model=MessageResponse)
@@ -192,9 +215,13 @@ def delete_opportunity(opportunity_id: int, db: DbDep, admin_user: User = Depend
     item = db.query(Opportunity).filter(Opportunity.id == opportunity_id).first()
     if not item:
         raise HTTPException(status_code=404, detail="Opportunity not found")
-    db.delete(item)
-    db.commit()
-    return MessageResponse(message="Opportunity deleted.")
+    try:
+        db.delete(item)
+        db.commit()
+        return MessageResponse(message="Opportunity deleted.")
+    except SQLAlchemyError as exc:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Could not delete opportunity ({exc.__class__.__name__}).")
 
 
 @router.post("/events", response_model=MessageResponse)

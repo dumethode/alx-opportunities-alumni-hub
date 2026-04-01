@@ -367,6 +367,27 @@ export function AdminSection() {
     setTestimonials(testimonialPayload.status === "fulfilled" ? testimonialPayload.value.items : []);
     setGroups(groupPayload.status === "fulfilled" ? groupPayload.value.items : []);
     setLocations(locationPayload.status === "fulfilled" ? locationPayload.value.items : []);
+
+    const errors: string[] = [];
+    const collect = (label: string, result: PromiseSettledResult<any>) => {
+      if (result.status === "rejected") {
+        const reason = result.reason;
+        const detail = reason instanceof Error ? reason.message : String(reason || "Request failed");
+        errors.push(`${label}: ${detail}`);
+      }
+    };
+    collect("Overview", overview);
+    collect("Opportunities", opportunityPayload);
+    collect("Events", eventPayload);
+    collect("Newsletters", newsletterPayload);
+    collect("Testimonials", testimonialPayload);
+    collect("Groups", groupPayload);
+    collect("Hub locations", locationPayload);
+
+    if (errors.length) {
+      setMessageTone("error");
+      setMessage(errors[0]);
+    }
   }
 
   useEffect(() => {
