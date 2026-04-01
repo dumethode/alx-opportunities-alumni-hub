@@ -645,12 +645,11 @@ export function AdminSection() {
                     ref={descriptionRef}
                     contentEditable
                     suppressContentEditableWarning
-                    onInput={(event) => {
-                      const html = (event.currentTarget as HTMLDivElement).innerHTML;
-                      setOpportunityDraft((current: any) => ({
-                        ...current,
-                        description: html,
-                      }));
+                    onInput={() => {
+                      // Defensive: some browsers/extensions can trigger input events after unmount,
+                      // or with a missing currentTarget in production builds.
+                      const html = descriptionRef.current?.innerHTML ?? "";
+                      setOpportunityDraft((current: any) => ({ ...current, description: html }));
                     }}
                     className="min-h-[220px] rounded-3xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white focus:outline-none"
                   />
@@ -716,6 +715,7 @@ export function AdminSection() {
                           apply_url: item.apply_url ?? "",
                           image_url_text: item.image_url?.startsWith("http") ? item.image_url : "",
                         });
+                        setDescriptionSyncKey((k) => k + 1);
                         setMessage(`Editing ${item.title}. Update the fields and save changes.`);
                       }} className="rounded-2xl border border-cyan-300/25 bg-white/10 px-4 py-2 text-sm font-medium text-white transition hover:bg-white/15 active:scale-[0.98]">
                         Edit

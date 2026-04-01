@@ -14,10 +14,28 @@ router = APIRouter()
 
 @router.get("/home")
 def home(db: DbDep) -> dict:
-    featured_opportunities = db.query(Opportunity).filter(Opportunity.featured.is_(True)).limit(3).all()
+    featured_opportunities = (
+        db.query(Opportunity)
+        .filter(Opportunity.featured.is_(True))
+        .order_by(Opportunity.published_at.desc())
+        .limit(3)
+        .all()
+    )
     latest_opportunities = db.query(Opportunity).order_by(Opportunity.published_at.desc()).limit(6).all()
-    featured_events = db.query(Event).filter(Event.featured.is_(True)).limit(3).all()
-    testimonials = db.query(Testimonial).filter(Testimonial.approved.is_(True)).limit(3).all()
+    featured_events = (
+        db.query(Event)
+        .filter(Event.featured.is_(True))
+        .order_by(Event.start_at.desc())
+        .limit(3)
+        .all()
+    )
+    testimonials = (
+        db.query(Testimonial)
+        .filter(Testimonial.approved.is_(True))
+        .order_by(Testimonial.id.desc())
+        .limit(3)
+        .all()
+    )
     newsletters = db.query(Newsletter).order_by(Newsletter.published_at.desc()).limit(2).all()
     hubs = db.query(HubLocation).filter(HubLocation.active.is_(True)).all()
     return {
@@ -113,4 +131,3 @@ def create_contact_message(payload: ContactPayload, db: DbDep) -> MessageRespons
     db.add(ContactMessage(**payload.model_dump()))
     db.commit()
     return MessageResponse(message="Your message was sent successfully.")
-

@@ -160,7 +160,8 @@ export function ContactForm() {
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setState("loading");
-    const form = new FormData(event.currentTarget);
+    const formEl = event.currentTarget;
+    const form = new FormData(formEl);
 
     try {
       await clientApi("/contact", {
@@ -175,7 +176,7 @@ export function ContactForm() {
         },
       });
       setState("success");
-      event.currentTarget.reset();
+      formEl.reset();
     } catch {
       setState("error");
     }
@@ -213,7 +214,8 @@ export function NewsletterSignupForm() {
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setState("loading");
-    const form = new FormData(event.currentTarget);
+    const formEl = event.currentTarget;
+    const form = new FormData(formEl);
 
     try {
       await clientApi("/contact", {
@@ -228,7 +230,7 @@ export function NewsletterSignupForm() {
         },
       });
       setState("success");
-      event.currentTarget.reset();
+      formEl.reset();
     } catch {
       setState("error");
     }

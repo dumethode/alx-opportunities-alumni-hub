@@ -36,7 +36,7 @@ export default async function OpportunityDetailPage({
           </div>
           <div
             className="prose prose-invert max-w-none text-base leading-8 text-slate-200 [&_h3]:mt-6 [&_h3]:text-xl [&_h3]:font-semibold [&_li]:my-1"
-            dangerouslySetInnerHTML={{ __html: opportunity.description }}
+            dangerouslySetInnerHTML={{ __html: opportunity.description ?? "" }}
           />
           <div className="rounded-3xl border border-white/10 bg-slate-950/50 px-5 py-4 text-sm text-slate-300">
             Before posting any opportunity, we first check for you regarding being legit, we are here for you.
