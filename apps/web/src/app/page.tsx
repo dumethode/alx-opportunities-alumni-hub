@@ -133,7 +133,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="content-grid page-section">
+      <section className="content-grid pt-8 pb-10 md:pt-12 md:pb-14">
         <Reveal>
           <SectionHeading
             eyebrow="Career Tracks"
@@ -202,7 +202,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="content-grid page-section">
+      <section className="content-grid pt-10 pb-16 md:pt-14 md:pb-24">
         <Reveal>
         <SectionHeading
           eyebrow="Featured Opportunities"

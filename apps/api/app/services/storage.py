@@ -9,10 +9,14 @@ from app.core.config import settings
 
 
 def _save_local_upload(content: bytes, folder: str, filename: str) -> str:
-    uploads_dir = Path("uploads") / folder
-    uploads_dir.mkdir(parents=True, exist_ok=True)
-    destination = uploads_dir / filename
-    destination.write_bytes(content)
+    uploads_root = Path(settings.uploads_dir)
+    destination_dir = uploads_root / folder
+    try:
+        destination_dir.mkdir(parents=True, exist_ok=True)
+        destination = destination_dir / filename
+        destination.write_bytes(content)
+    except OSError as exc:
+        raise HTTPException(status_code=500, detail="Upload failed, storage path is not writable") from exc
     return f"/uploads/{folder}/{filename}"
 
 

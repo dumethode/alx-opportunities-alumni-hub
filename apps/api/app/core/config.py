@@ -12,6 +12,9 @@ class Settings(BaseSettings):
     cookie_secure: bool = False
     cookie_samesite: str = "lax"
     cookie_domain: str | None = None
+    # Local storage path used when Supabase storage is not configured.
+    # On many hosts (including free tiers), /tmp is the most reliable writable path.
+    uploads_dir: str = "/tmp/alx-hub-uploads"
     supabase_url: str | None = None
     supabase_service_role_key: str | None = None
     supabase_avatars_bucket: str = "avatars"

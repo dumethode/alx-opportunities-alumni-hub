@@ -12,7 +12,7 @@ from app.core.database import Base, engine, session_scope
 from app.seeds.seed import seed_database
 
 
-uploads_dir = Path("uploads")
+uploads_dir = Path(settings.uploads_dir)
 try:
     uploads_dir.mkdir(exist_ok=True)
     (uploads_dir / "avatars").mkdir(exist_ok=True)
@@ -95,5 +95,5 @@ def health() -> dict[str, str]:
 
 
 if uploads_dir.exists():
-    app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
+    app.mount("/uploads", StaticFiles(directory=str(uploads_dir)), name="uploads")
 app.include_router(api_router, prefix="/api/v1")
