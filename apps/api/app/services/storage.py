@@ -1,23 +1,36 @@
-from pathlib import Path
 from urllib.error import HTTPError, URLError
 from urllib.parse import quote
 from urllib.request import Request, urlopen
+from uuid import uuid4
 
 from fastapi import HTTPException, UploadFile
 
 from app.core.config import settings
+from app.core.database import session_scope
+from app.models.models import UploadedAsset
 
 
-def _save_local_upload(content: bytes, folder: str, filename: str) -> str:
-    uploads_root = Path(settings.uploads_dir)
-    destination_dir = uploads_root / folder
-    try:
-        destination_dir.mkdir(parents=True, exist_ok=True)
-        destination = destination_dir / filename
-        destination.write_bytes(content)
-    except OSError as exc:
-        raise HTTPException(status_code=500, detail="Upload failed, storage path is not writable") from exc
-    return f"/uploads/{folder}/{filename}"
+MAX_UPLOAD_BYTES = 5 * 1024 * 1024
+
+
+def _save_db_upload(content: bytes, folder: str, filename: str, content_type: str | None) -> str:
+    if len(content) > MAX_UPLOAD_BYTES:
+        raise HTTPException(status_code=413, detail="Image is too large. Please upload a smaller file.")
+
+    asset_id = uuid4().hex
+    with session_scope() as db:
+        db.add(
+            UploadedAsset(
+                id=asset_id,
+                folder=folder,
+                filename=filename,
+                content_type=content_type,
+                content=content,
+            )
+        )
+        db.commit()
+    # Stored under the API prefix so the frontend can resolve with API_BASE_URL origin.
+    return f"/api/v1/assets/{asset_id}"
 
 
 def _supabase_public_url(bucket: str, object_path: str) -> str:
@@ -67,4 +80,5 @@ def store_upload(
     if settings.supabase_url and settings.supabase_service_role_key and bucket:
         return _save_supabase_upload(content, bucket, f"{folder}/{filename}", upload.content_type or "application/octet-stream")
 
-    return _save_local_upload(content, folder, filename)
+    # Fallback to DB-backed assets so uploads survive restarts on ephemeral hosts.
+    return _save_db_upload(content, folder, filename, upload.content_type)

@@ -1,7 +1,7 @@
 from datetime import datetime
 from enum import Enum
 
-from sqlalchemy import JSON, Boolean, Date, DateTime, Enum as SqlEnum, ForeignKey, Integer, String, Text, UniqueConstraint
+from sqlalchemy import JSON, Boolean, Date, DateTime, Enum as SqlEnum, ForeignKey, Integer, LargeBinary, String, Text, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.database import Base
@@ -323,4 +323,15 @@ class AdminAuditLog(Base):
     entity_type: Mapped[str] = mapped_column(String(120))
     entity_id: Mapped[int | None] = mapped_column(Integer, nullable=True)
     metadata_json: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+
+class UploadedAsset(Base):
+    __tablename__ = "uploaded_assets"
+
+    id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    folder: Mapped[str] = mapped_column(String(80))
+    filename: Mapped[str] = mapped_column(String(180))
+    content_type: Mapped[str | None] = mapped_column(String(120), nullable=True)
+    content: Mapped[bytes] = mapped_column(LargeBinary)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)

@@ -1,10 +1,10 @@
 from datetime import datetime
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query, Response
 from sqlalchemy import func
 
 from app.api.deps import DbDep
-from app.models.models import ContactMessage, Event, HubLocation, Newsletter, Opportunity, OpportunityView, Testimonial
+from app.models.models import ContactMessage, Event, HubLocation, Newsletter, Opportunity, OpportunityView, Testimonial, UploadedAsset
 from app.schemas.common import MessageResponse
 from app.schemas.domain import ContactPayload
 from app.services.serializers import serialize_event, serialize_location, serialize_newsletter, serialize_opportunity, serialize_testimonial
@@ -23,6 +23,19 @@ def _views_count_map(db: DbDep, opportunity_ids: list[int]) -> dict[int, int]:
         .all()
     )
     return {int(opp_id): int(count) for opp_id, count in rows}
+
+
+@router.get("/assets/{asset_id}")
+def get_asset(asset_id: str, db: DbDep) -> Response:
+    asset = db.query(UploadedAsset).filter(UploadedAsset.id == asset_id).first()
+    if not asset:
+        raise HTTPException(status_code=404, detail="Asset not found")
+
+    headers = {
+        "Cache-Control": "public, max-age=31536000, immutable",
+        "Content-Disposition": f'inline; filename="{asset.filename}"',
+    }
+    return Response(content=asset.content, media_type=asset.content_type or "application/octet-stream", headers=headers)
 
 
 @router.get("/home")

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, BadgeCheck, ShieldCheck, Sparkles } from "lucide-react";
+import { ArrowRight, BadgeCheck, CalendarDays, ShieldCheck, Sparkles } from "lucide-react";
 
 import { EventCard, NewsletterCard, OpportunityCard, TestimonialCard } from "@/components/cards";
 import { AnimatedCounter, CarouselStrip, HeroAtmosphere, HeroBackdrop, HeroSlides, Reveal, RoleMarquee } from "@/components/effects";
@@ -271,42 +271,32 @@ export default async function HomePage() {
                 </div>
               ))
             ) : (
-              [
-                {
-                  id: "placeholder-1",
-                  title: "ALX Career Momentum Night",
-                  slug: "placeholder",
-                  category: "Career",
-                  summary: "Opportunity reviews, recruiter insights, and alumni networking in one evening.",
-                  start_at: new Date().toISOString(),
-                  venue_name: "ALX Tech Hub at Deco Center",
-                  status: "upcoming",
-                },
-                {
-                  id: "placeholder-2",
-                  title: "Builders Breakfast at Zaria Court",
-                  slug: "placeholder",
-                  category: "Networking",
-                  summary: "A focused meetup for alumni, founders, and learners looking to collaborate.",
-                  start_at: new Date(Date.now() + 86400000 * 2).toISOString(),
-                  venue_name: "ALX Hub at Zaria Court",
-                  status: "upcoming",
-                },
-                {
-                  id: "placeholder-3",
-                  title: "Masterclass Highlights",
-                  slug: "placeholder",
-                  category: "Masterclass",
-                  summary: "A practical session to sharpen your portfolio, CV, and interview readiness.",
-                  start_at: new Date(Date.now() + 86400000 * 4).toISOString(),
-                  venue_name: "Online",
-                  status: "upcoming",
-                },
-              ].map((event: any) => (
-                <div key={event.id} className="min-w-[320px] snap-start lg:min-w-[360px]">
-                  <EventCard event={event} />
-                </div>
-              ))
+              <div className="min-w-[320px] snap-start lg:min-w-[360px]">
+                <GlassCard className="glass-card-balanced group space-y-5 transition duration-300 hover:-translate-y-1 hover:shadow-[0_24px_80px_rgba(0,0,0,0.18)]">
+                  <div className="flex items-center justify-between">
+                    <span className="rounded-full border border-cyan-300/25 bg-cyan-300/12 px-3 py-1 text-xs font-semibold text-cyan-100">
+                      Upcoming
+                    </span>
+                    <span className="rounded-full border border-white/10 bg-white/10 px-3 py-1 text-xs uppercase tracking-[0.18em] text-slate-200">
+                      Awaiting publish
+                    </span>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="text-xl font-semibold text-white">No featured events yet</div>
+                    <p className="text-sm leading-7 text-slate-300">
+                      Admins can publish events from the Admin Panel. Once published, they will appear here automatically.
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm text-slate-300">
+                    <CalendarDays className="h-4 w-4 text-cyan-200" />
+                    Events will show date, venue, and details link.
+                  </div>
+                  <Link href="/events" className="inline-flex items-center gap-2 text-sm font-medium text-cyan-200 transition group-hover:text-white">
+                    Browse events
+                    <ArrowRight className="h-4 w-4" />
+                  </Link>
+                </GlassCard>
+              </div>
             )}
           </CarouselStrip>
         </div>
@@ -331,15 +321,19 @@ export default async function HomePage() {
                   </div>
                 ))
               ) : (
-                [
-                  { id: "t-1", quote: "The hub makes it easy to spot real opportunities and stay accountable.", name: "ALX Member", role: "Learner", company: "" },
-                  { id: "t-2", quote: "Mentorship booking and resources reduce the time it takes to apply well.", name: "ALX Alumni", role: "Alumni", company: "" },
-                  { id: "t-3", quote: "Events and community signals help me learn what is actually happening.", name: "ALX Fellow", role: "Community", company: "" },
-                ].map((testimonial: any) => (
-                  <div key={testimonial.id} className="min-w-[300px] snap-start lg:min-w-[340px]">
-                    <TestimonialCard testimonial={testimonial} />
-                  </div>
-                ))
+                <div className="min-w-[300px] snap-start lg:min-w-[340px]">
+                  <GlassCard className="glass-card-balanced space-y-4">
+                    <Sparkles className="h-6 w-6 text-cyan-200" />
+                    <div className="text-lg font-semibold text-white">No testimonials published yet</div>
+                    <p className="text-sm leading-7 text-slate-300">
+                      When admins publish testimonials, they will appear here. This section is designed for real quotes only.
+                    </p>
+                    <Link href="/about" className="inline-flex items-center gap-2 text-sm font-semibold text-cyan-200 hover:text-white">
+                      Learn about the hub
+                      <ArrowRight className="h-4 w-4" />
+                    </Link>
+                  </GlassCard>
+                </div>
               )}
             </CarouselStrip>
             </div>
@@ -387,24 +381,14 @@ export default async function HomePage() {
               </Reveal>
             ))
           ) : (
-            [
-              {
-                id: "n-1",
-                title: "ALX Updates Memo",
-                summary: "A snapshot of new opportunities, upcoming sessions, and community support options.",
-                published_at: new Date().toISOString(),
-              },
-              {
-                id: "n-2",
-                title: "Opportunity Highlights",
-                summary: "Fresh listings with practical context plus tips for a stronger application.",
-                published_at: new Date(Date.now() - 86400000 * 7).toISOString(),
-              },
-            ].map((newsletter: any) => (
-              <Reveal key={newsletter.id}>
-                <NewsletterCard newsletter={newsletter} />
-              </Reveal>
-            ))
+            <Reveal>
+              <GlassCard className="glass-card-balanced space-y-3 md:col-span-2">
+                <div className="text-lg font-semibold text-white">No newsletters yet</div>
+                <p className="text-sm leading-7 text-slate-300">
+                  Newsletter posts will appear here as soon as the team publishes them. The signup in the footer is already wired.
+                </p>
+              </GlassCard>
+            </Reveal>
           )}
         </div>
         <div className="mt-6">
