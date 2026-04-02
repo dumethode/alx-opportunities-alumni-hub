@@ -12,7 +12,7 @@ export default async function HomePage() {
 
   return (
     <div>
-      <section className="content-grid page-section">
+      <section className="content-grid pt-12 pb-14 md:pt-16 md:pb-20">
         <div className="grid gap-8 lg:grid-cols-[1.25fr_0.75fr]">
           <Reveal className="h-full">
           <GlassCard className="on-media hero-glow relative overflow-hidden px-7 py-8 md:px-10 md:py-12">
@@ -141,7 +141,7 @@ export default async function HomePage() {
             description="A fast way to scan where your next opportunity can take you."
           />
         </Reveal>
-        <div className="mt-8 grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
+        <div className="mt-6 grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
           <Reveal>
             <RoleMarquee
               title="Popular roles and categories"

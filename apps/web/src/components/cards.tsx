@@ -76,11 +76,11 @@ export function EventCard({ event }: { event: EventItem }) {
       <div className="space-y-2 text-sm text-slate-300">
         <div className="flex items-center gap-2">
           <CalendarDays className="h-4 w-4 text-cyan-200" />
-          {new Date(event.start_at).toLocaleString()}
+          <span className="min-w-0 break-words">{new Date(event.start_at).toLocaleString()}</span>
         </div>
         <div className="flex items-center gap-2">
           <MapPin className="h-4 w-4 text-cyan-200" />
-          {event.venue_name ?? event.location_text ?? "Venue TBA"}
+          <span className="min-w-0 break-words">{event.venue_name ?? event.location_text ?? "Venue TBA"}</span>
         </div>
       </div>
       <Link href={`/events/${event.slug}`} className="inline-flex items-center gap-2 text-sm font-medium text-cyan-200 transition group-hover:text-white">

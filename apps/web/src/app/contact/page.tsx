@@ -16,7 +16,7 @@ export default async function ContactPage() {
         <GlassCard className="space-y-5">
           <div className="text-xl font-semibold text-white">Send a message</div>
           <div className="text-sm leading-7 text-slate-300">
-            For direct support, you can also email <a href="mailto:support@alxafrica.com" className="text-cyan-200 hover:text-white">support@alxafrica.com</a>.
+            For direct support, you can also email <a href="mailto:kigalihub@alxafrica.com" className="text-cyan-200 hover:text-white">kigalihub@alxafrica.com</a>.
           </div>
           <ContactForm />
         </GlassCard>

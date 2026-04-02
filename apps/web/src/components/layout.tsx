@@ -71,6 +71,8 @@ const footerColumns = [
   },
 ];
 
+const supportEmail = "kigalihub@alxafrica.com";
+
 export function BrandMark({
   compact = false,
   subline = "Opportunities & Alumni Hub",
@@ -412,11 +414,11 @@ export function SiteShell({ children }: { children: ReactNode }) {
               </p>
               <div className="grid gap-3">
                 <a
-                  href="mailto:support@alxafrica.com"
+                  href={`mailto:${supportEmail}`}
                   className="inline-flex items-center gap-2 text-sm text-[var(--alx-text-muted)] transition hover:text-[var(--alx-text-strong)]"
                 >
                   <Mail className="h-4 w-4 text-[var(--alx-accent-text)]" />
-                  support@alxafrica.com
+                  {supportEmail}
                 </a>
                 <Link
                   href="/contact"
@@ -461,8 +463,8 @@ export function SiteShell({ children }: { children: ReactNode }) {
               </div>
               <NewsletterSignupForm />
               <div className="grid gap-2 text-sm text-[var(--alx-text-muted)]">
-                <a href="mailto:support@alxafrica.com" className="transition hover:text-[var(--alx-text-strong)]">
-                  support@alxafrica.com
+                <a href={`mailto:${supportEmail}`} className="transition hover:text-[var(--alx-text-strong)]">
+                  {supportEmail}
                 </a>
                 <a href="mailto:community@alxafrica.com" className="transition hover:text-[var(--alx-text-strong)]">
                   community@alxafrica.com

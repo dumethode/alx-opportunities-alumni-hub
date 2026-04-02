@@ -4,6 +4,7 @@ import Link from "next/link";
 import { FormEvent, useEffect, useRef, useState } from "react";
 
 import { DocumentBuilder } from "@/components/forms";
+import { SafeImage } from "@/components/safe-image";
 import { API_BASE_URL, clientApi, getStoredAccessToken, resolveAssetUrl } from "@/lib/client-api";
 
 function RequireAuth({
@@ -295,6 +296,7 @@ export function AdminSection() {
   const [editingTestimonialId, setEditingTestimonialId] = useState<number | null>(null);
   const [editingGroupId, setEditingGroupId] = useState<number | null>(null);
   const [editingLocationId, setEditingLocationId] = useState<number | null>(null);
+  const [opportunityImagePreview, setOpportunityImagePreview] = useState<string | null>(null);
 
   const blankOpportunity = {
     title: "",
@@ -338,7 +340,13 @@ export function AdminSection() {
 
   function formatCommand(command: string, value?: string) {
     if (typeof document === "undefined") return;
-    document.execCommand(command, false, value);
+    // Ensure the editable element has focus so execCommand applies to the correct selection.
+    descriptionRef.current?.focus();
+    try {
+      document.execCommand(command, false, value);
+    } catch {
+      // Some commands are disabled in certain browsers. Ignore and keep UI responsive.
+    }
   }
 
   async function loadAdminData() {
@@ -399,6 +407,14 @@ export function AdminSection() {
       descriptionRef.current.innerHTML = opportunityDraft.description || "";
     }
   }, [descriptionSyncKey, editingOpportunityId]);
+
+  useEffect(() => {
+    return () => {
+      if (opportunityImagePreview?.startsWith("blob:")) {
+        URL.revokeObjectURL(opportunityImagePreview);
+      }
+    };
+  }, [opportunityImagePreview]);
 
   async function submitOpportunity(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -658,9 +674,34 @@ export function AdminSection() {
                     <button type="button" onClick={() => formatCommand("italic")} className="rounded-xl border border-white/10 bg-white/10 px-3 py-1.5 text-sm italic text-white transition hover:bg-white/20 active:scale-[0.95]">I</button>
                     <button type="button" onClick={() => formatCommand("underline")} className="rounded-xl border border-white/10 bg-white/10 px-3 py-1.5 text-sm underline text-white transition hover:bg-white/20 active:scale-[0.95]">U</button>
                     <button type="button" onClick={() => formatCommand("insertUnorderedList")} className="rounded-xl border border-white/10 bg-white/10 px-3 py-1.5 text-sm text-white transition hover:bg-white/20 active:scale-[0.95]">Bullets</button>
+                    <button type="button" onClick={() => formatCommand("insertOrderedList")} className="rounded-xl border border-white/10 bg-white/10 px-3 py-1.5 text-sm text-white transition hover:bg-white/20 active:scale-[0.95]">Numbered</button>
+                    <button type="button" onClick={() => formatCommand("indent")} className="rounded-xl border border-white/10 bg-white/10 px-3 py-1.5 text-sm text-white transition hover:bg-white/20 active:scale-[0.95]">Indent</button>
+                    <button type="button" onClick={() => formatCommand("outdent")} className="rounded-xl border border-white/10 bg-white/10 px-3 py-1.5 text-sm text-white transition hover:bg-white/20 active:scale-[0.95]">Outdent</button>
                     <button type="button" onClick={() => formatCommand("formatBlock", "<h3>")} className="rounded-xl border border-white/10 bg-white/10 px-3 py-1.5 text-sm text-white transition hover:bg-white/20 active:scale-[0.95]">Heading</button>
                     <button type="button" onClick={() => formatCommand("fontSize", "4")} className="rounded-xl border border-white/10 bg-white/10 px-3 py-1.5 text-sm text-white transition hover:bg-white/20 active:scale-[0.95]">Larger text</button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const url = window.prompt("Paste a link URL");
+                        if (url) formatCommand("createLink", url);
+                      }}
+                      className="rounded-xl border border-white/10 bg-white/10 px-3 py-1.5 text-sm text-white transition hover:bg-white/20 active:scale-[0.95]"
+                    >
+                      Link
+                    </button>
                     <button type="button" onClick={() => formatCommand("removeFormat")} className="rounded-xl border border-white/10 bg-white/10 px-3 py-1.5 text-sm text-white transition hover:bg-white/20 active:scale-[0.95]">Clear</button>
+                    <div className="ml-auto flex items-center gap-2">
+                      <span className="text-xs text-slate-300">Font</span>
+                      <select
+                        onChange={(event) => formatCommand("fontName", event.target.value)}
+                        className="rounded-xl border border-white/10 bg-white/10 px-3 py-1.5 text-sm text-white"
+                        defaultValue="system-ui"
+                      >
+                        <option value="system-ui">Website</option>
+                        <option value="Montserrat">Montserrat</option>
+                        <option value="Times New Roman">Times New Roman</option>
+                      </select>
+                    </div>
                   </div>
                   <div
                     ref={descriptionRef}
@@ -689,8 +730,39 @@ export function AdminSection() {
                 <label className="block text-sm text-slate-300">
                   Opportunity image upload
                   <span className="mt-1 block text-xs text-slate-400">Upload an image or paste a direct image link above for hosted images.</span>
-                  <input name="image" type="file" accept="image/*" className="mt-2 block w-full text-sm text-slate-300" />
+                  <input
+                    name="image"
+                    type="file"
+                    accept="image/*"
+                    className="mt-2 block w-full text-sm text-slate-300"
+                    onChange={(event) => {
+                      const file = event.currentTarget.files?.[0];
+                      if (!file) {
+                        if (opportunityImagePreview?.startsWith("blob:")) URL.revokeObjectURL(opportunityImagePreview);
+                        setOpportunityImagePreview(null);
+                        return;
+                      }
+                      if (opportunityImagePreview?.startsWith("blob:")) URL.revokeObjectURL(opportunityImagePreview);
+                      setOpportunityImagePreview(URL.createObjectURL(file));
+                    }}
+                  />
                 </label>
+                {(opportunityImagePreview || opportunityDraft.image_url_text) ? (
+                  <div className="rounded-3xl border border-white/10 bg-white/5 p-4">
+                    <div className="text-xs uppercase tracking-[0.22em] text-slate-300">Preview</div>
+                    <div className="mt-3 overflow-hidden rounded-2xl border border-white/10">
+                      <SafeImage
+                        src={opportunityImagePreview ?? opportunityDraft.image_url_text}
+                        fallbackSrc="/media/placeholders/opportunity-default.jpg"
+                        alt="Opportunity image preview"
+                        className="h-40 w-full object-cover"
+                      />
+                    </div>
+                    <div className="mt-2 text-xs text-slate-400">
+                      Uploads are stored securely. If you paste a link, make sure it is a direct image URL.
+                    </div>
+                  </div>
+                ) : null}
                 {message ? (
                   <div
                     className={`rounded-2xl px-4 py-3 text-sm ${

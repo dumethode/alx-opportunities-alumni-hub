@@ -12,7 +12,7 @@ export default function ForgotPasswordPage() {
           <p className="text-sm leading-7 text-slate-300">
             Reset email delivery is the remaining step here. Until that is wired, use the contact team for manual help if needed.
           </p>
-          <a href="mailto:support@alxafrica.com" className="inline-flex w-fit rounded-2xl bg-white px-5 py-3 text-sm font-semibold text-slate-950">
+          <a href="mailto:kigalihub@alxafrica.com" className="inline-flex w-fit rounded-2xl bg-white px-5 py-3 text-sm font-semibold text-slate-950">
             Contact support
           </a>
         </GlassCard>

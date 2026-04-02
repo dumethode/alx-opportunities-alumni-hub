@@ -90,6 +90,23 @@ export function Reveal({
     const node = ref.current;
     if (!node) return;
 
+    // If the element is already in view on first paint (common on mobile),
+    // show it immediately so we do not reserve a large blank space.
+    try {
+      const rect = node.getBoundingClientRect();
+      if (rect.top < window.innerHeight * 0.9) {
+        setVisible(true);
+        return;
+      }
+    } catch {
+      // ignore
+    }
+
+    if (typeof IntersectionObserver === "undefined") {
+      setVisible(true);
+      return;
+    }
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
