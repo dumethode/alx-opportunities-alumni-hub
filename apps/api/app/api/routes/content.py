@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from fastapi import APIRouter, HTTPException, Query
+from sqlalchemy import func
 
 from app.api.deps import DbDep
 from app.models.models import ContactMessage, Event, HubLocation, Newsletter, Opportunity, OpportunityView, Testimonial
@@ -10,6 +11,18 @@ from app.services.serializers import serialize_event, serialize_location, serial
 
 
 router = APIRouter()
+
+
+def _views_count_map(db: DbDep, opportunity_ids: list[int]) -> dict[int, int]:
+    if not opportunity_ids:
+        return {}
+    rows = (
+        db.query(OpportunityView.opportunity_id, func.count(OpportunityView.id))
+        .filter(OpportunityView.opportunity_id.in_(opportunity_ids))
+        .group_by(OpportunityView.opportunity_id)
+        .all()
+    )
+    return {int(opp_id): int(count) for opp_id, count in rows}
 
 
 @router.get("/home")
@@ -38,6 +51,10 @@ def home(db: DbDep) -> dict:
     )
     newsletters = db.query(Newsletter).order_by(Newsletter.published_at.desc()).limit(2).all()
     hubs = db.query(HubLocation).filter(HubLocation.active.is_(True)).all()
+    view_counts = _views_count_map(
+        db,
+        [item.id for item in featured_opportunities] + [item.id for item in latest_opportunities],
+    )
     return {
         "stats": {
             "opportunities": db.query(Opportunity).count(),
@@ -45,8 +62,12 @@ def home(db: DbDep) -> dict:
             "alumni": db.query(Testimonial).count() + 42,
             "services": 6,
         },
-        "featured_opportunities": [serialize_opportunity(item) for item in featured_opportunities],
-        "latest_opportunities": [serialize_opportunity(item) for item in latest_opportunities],
+        "featured_opportunities": [
+            {**serialize_opportunity(item), "views_count": view_counts.get(item.id, 0)} for item in featured_opportunities
+        ],
+        "latest_opportunities": [
+            {**serialize_opportunity(item), "views_count": view_counts.get(item.id, 0)} for item in latest_opportunities
+        ],
         "featured_events": [serialize_event(item) for item in featured_events],
         "testimonials": [serialize_testimonial(item) for item in testimonials],
         "newsletters": [serialize_newsletter(item) for item in newsletters],
@@ -67,7 +88,11 @@ def list_opportunities(
     if category:
         query = query.join(Opportunity.category).filter_by(slug=category)
     items = query.order_by(Opportunity.published_at.desc()).all()
-    return {"items": [serialize_opportunity(item) for item in items], "count": len(items)}
+    view_counts = _views_count_map(db, [item.id for item in items])
+    return {
+        "items": [{**serialize_opportunity(item), "views_count": view_counts.get(item.id, 0)} for item in items],
+        "count": len(items),
+    }
 
 
 @router.get("/opportunities/{slug}")
@@ -85,7 +110,13 @@ def get_opportunity(slug: str, db: DbDep) -> dict:
         .limit(3)
         .all()
     )
-    return {"item": serialize_opportunity(item), "related": [serialize_opportunity(entry) for entry in related]}
+    view_counts = _views_count_map(db, [item.id] + [entry.id for entry in related])
+    return {
+        "item": {**serialize_opportunity(item), "views_count": view_counts.get(item.id, 0)},
+        "related": [
+            {**serialize_opportunity(entry), "views_count": view_counts.get(entry.id, 0)} for entry in related
+        ],
+    }
 
 
 @router.get("/events")

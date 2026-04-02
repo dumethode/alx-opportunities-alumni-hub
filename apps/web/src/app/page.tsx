@@ -264,11 +264,50 @@ export default async function HomePage() {
         </Reveal>
         <div className="section-fade-guard mt-8">
           <CarouselStrip>
-            {home.featured_events.map((event: any) => (
-              <div key={event.id} className="min-w-[320px] snap-start lg:min-w-[360px]">
-                <EventCard event={event} />
-              </div>
-            ))}
+            {home.featured_events.length ? (
+              home.featured_events.map((event: any) => (
+                <div key={event.id} className="min-w-[320px] snap-start lg:min-w-[360px]">
+                  <EventCard event={event} />
+                </div>
+              ))
+            ) : (
+              [
+                {
+                  id: "placeholder-1",
+                  title: "ALX Career Momentum Night",
+                  slug: "placeholder",
+                  category: "Career",
+                  summary: "Opportunity reviews, recruiter insights, and alumni networking in one evening.",
+                  start_at: new Date().toISOString(),
+                  venue_name: "ALX Tech Hub at Deco Center",
+                  status: "upcoming",
+                },
+                {
+                  id: "placeholder-2",
+                  title: "Builders Breakfast at Zaria Court",
+                  slug: "placeholder",
+                  category: "Networking",
+                  summary: "A focused meetup for alumni, founders, and learners looking to collaborate.",
+                  start_at: new Date(Date.now() + 86400000 * 2).toISOString(),
+                  venue_name: "ALX Hub at Zaria Court",
+                  status: "upcoming",
+                },
+                {
+                  id: "placeholder-3",
+                  title: "Masterclass Highlights",
+                  slug: "placeholder",
+                  category: "Masterclass",
+                  summary: "A practical session to sharpen your portfolio, CV, and interview readiness.",
+                  start_at: new Date(Date.now() + 86400000 * 4).toISOString(),
+                  venue_name: "Online",
+                  status: "upcoming",
+                },
+              ].map((event: any) => (
+                <div key={event.id} className="min-w-[320px] snap-start lg:min-w-[360px]">
+                  <EventCard event={event} />
+                </div>
+              ))
+            )}
           </CarouselStrip>
         </div>
       </section>
@@ -285,11 +324,23 @@ export default async function HomePage() {
             </Reveal>
             <div className="section-fade-guard">
             <CarouselStrip>
-              {home.testimonials.map((testimonial: any) => (
-                <div key={testimonial.id} className="min-w-[300px] snap-start lg:min-w-[340px]">
-                  <TestimonialCard testimonial={testimonial} />
-                </div>
-              ))}
+              {home.testimonials.length ? (
+                home.testimonials.map((testimonial: any) => (
+                  <div key={testimonial.id} className="min-w-[300px] snap-start lg:min-w-[340px]">
+                    <TestimonialCard testimonial={testimonial} />
+                  </div>
+                ))
+              ) : (
+                [
+                  { id: "t-1", quote: "The hub makes it easy to spot real opportunities and stay accountable.", name: "ALX Member", role: "Learner", company: "" },
+                  { id: "t-2", quote: "Mentorship booking and resources reduce the time it takes to apply well.", name: "ALX Alumni", role: "Alumni", company: "" },
+                  { id: "t-3", quote: "Events and community signals help me learn what is actually happening.", name: "ALX Fellow", role: "Community", company: "" },
+                ].map((testimonial: any) => (
+                  <div key={testimonial.id} className="min-w-[300px] snap-start lg:min-w-[340px]">
+                    <TestimonialCard testimonial={testimonial} />
+                  </div>
+                ))
+              )}
             </CarouselStrip>
             </div>
           </div>
@@ -329,11 +380,32 @@ export default async function HomePage() {
         />
         </Reveal>
         <div className="mt-8 grid gap-6 md:grid-cols-2">
-          {home.newsletters.map((newsletter: any) => (
-            <Reveal key={newsletter.id} delay={newsletter.id * 60}>
-              <NewsletterCard newsletter={newsletter} />
-            </Reveal>
-          ))}
+          {home.newsletters.length ? (
+            home.newsletters.map((newsletter: any) => (
+              <Reveal key={newsletter.id} delay={newsletter.id * 60}>
+                <NewsletterCard newsletter={newsletter} />
+              </Reveal>
+            ))
+          ) : (
+            [
+              {
+                id: "n-1",
+                title: "ALX Updates Memo",
+                summary: "A snapshot of new opportunities, upcoming sessions, and community support options.",
+                published_at: new Date().toISOString(),
+              },
+              {
+                id: "n-2",
+                title: "Opportunity Highlights",
+                summary: "Fresh listings with practical context plus tips for a stronger application.",
+                published_at: new Date(Date.now() - 86400000 * 7).toISOString(),
+              },
+            ].map((newsletter: any) => (
+              <Reveal key={newsletter.id}>
+                <NewsletterCard newsletter={newsletter} />
+              </Reveal>
+            ))
+          )}
         </div>
         <div className="mt-6">
           <Link href="/newsletters" className="inline-flex rounded-2xl border border-white/10 bg-white/5 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/10">

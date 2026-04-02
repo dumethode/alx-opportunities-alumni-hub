@@ -3,11 +3,12 @@ from uuid import uuid4
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy import func
 from slugify import slugify
 
 from app.api.deps import DbDep, get_admin_user
 from app.core.config import settings
-from app.models.models import CommunityGroup, Event, EventCategory, GroupType, HubLocation, Newsletter, Opportunity, OpportunityCategory, Testimonial, User
+from app.models.models import CommunityGroup, Event, EventCategory, GroupType, HubLocation, Newsletter, Opportunity, OpportunityCategory, OpportunityView, Testimonial, User
 from app.schemas.common import MessageResponse
 from app.services.serializers import serialize_event, serialize_group, serialize_location, serialize_newsletter, serialize_opportunity, serialize_testimonial
 from app.services.storage import store_upload
@@ -62,6 +63,18 @@ def _build_unique_slug(db: DbDep, title: str, *, ignore_id: int | None = None) -
         counter += 1
 
 
+def _views_count_map(db: DbDep, opportunity_ids: list[int]) -> dict[int, int]:
+    if not opportunity_ids:
+        return {}
+    rows = (
+        db.query(OpportunityView.opportunity_id, func.count(OpportunityView.id))
+        .filter(OpportunityView.opportunity_id.in_(opportunity_ids))
+        .group_by(OpportunityView.opportunity_id)
+        .all()
+    )
+    return {int(opp_id): int(count) for opp_id, count in rows}
+
+
 @router.get("/overview")
 def overview(db: DbDep, admin_user: User = Depends(get_admin_user)) -> dict:
     return {
@@ -80,14 +93,16 @@ def overview(db: DbDep, admin_user: User = Depends(get_admin_user)) -> dict:
 def list_admin_opportunities(db: DbDep, admin_user: User = Depends(get_admin_user)) -> dict:
     try:
         items = db.query(Opportunity).order_by(Opportunity.published_at.desc()).all()
-        return {"items": [serialize_opportunity(item) for item in items]}
+        view_counts = _views_count_map(db, [item.id for item in items])
+        return {"items": [{**serialize_opportunity(item), "views_count": view_counts.get(item.id, 0)} for item in items]}
     except SQLAlchemyError as exc:
         # Hosted DBs can occasionally drift between deploys. Fallback to id ordering and
         # return a safe error message if that also fails.
         db.rollback()
         try:
             items = db.query(Opportunity).order_by(Opportunity.id.desc()).all()
-            return {"items": [serialize_opportunity(item) for item in items]}
+            view_counts = _views_count_map(db, [item.id for item in items])
+            return {"items": [{**serialize_opportunity(item), "views_count": view_counts.get(item.id, 0)} for item in items]}
         except SQLAlchemyError:
             db.rollback()
             raise HTTPException(
@@ -156,7 +171,6 @@ def create_opportunity(
     featured: bool = Form(default=False),
     deadline: str | None = Form(default=None),
     deadline_label: str | None = Form(default=None),
-    image_url_text: str | None = Form(default=None),
     image: UploadFile | None = File(default=None),
 ) -> MessageResponse:
     title = _ensure_max("title", _clean_str(title), OPPORTUNITY_LIMITS["title"]) or ""
@@ -169,7 +183,6 @@ def create_opportunity(
     opportunity_type = _ensure_max("type", _clean_str(opportunity_type), OPPORTUNITY_LIMITS["opportunity_type"])
     apply_url = _ensure_max("apply url", _clean_str(apply_url), OPPORTUNITY_LIMITS["apply_url"])
     deadline_label = _ensure_max("deadline label", _clean_str(deadline_label), OPPORTUNITY_LIMITS["deadline_label"])
-    image_url_text = _ensure_max("image link", _clean_str(image_url_text), OPPORTUNITY_LIMITS["image_url"])
 
     category = db.query(OpportunityCategory).filter(OpportunityCategory.slug == category_slug).first()
     if not category:
@@ -191,7 +204,7 @@ def create_opportunity(
         featured=featured,
         deadline=datetime.fromisoformat(deadline) if deadline else None,
         deadline_label=deadline_label or None,
-        image_url=_ensure_max("image", store_opportunity_image(image) or image_url_text, OPPORTUNITY_LIMITS["image_url"]),
+        image_url=_ensure_max("image", store_opportunity_image(image), OPPORTUNITY_LIMITS["image_url"]),
         created_by=admin_user.id,
     )
     try:
@@ -221,7 +234,6 @@ def update_opportunity(
     featured: bool = Form(default=False),
     deadline: str | None = Form(default=None),
     deadline_label: str | None = Form(default=None),
-    image_url_text: str | None = Form(default=None),
     image: UploadFile | None = File(default=None),
 ) -> MessageResponse:
     title = _ensure_max("title", _clean_str(title), OPPORTUNITY_LIMITS["title"]) or ""
@@ -234,7 +246,6 @@ def update_opportunity(
     opportunity_type = _ensure_max("type", _clean_str(opportunity_type), OPPORTUNITY_LIMITS["opportunity_type"])
     apply_url = _ensure_max("apply url", _clean_str(apply_url), OPPORTUNITY_LIMITS["apply_url"])
     deadline_label = _ensure_max("deadline label", _clean_str(deadline_label), OPPORTUNITY_LIMITS["deadline_label"])
-    image_url_text = _ensure_max("image link", _clean_str(image_url_text), OPPORTUNITY_LIMITS["image_url"])
 
     item = db.query(Opportunity).filter(Opportunity.id == opportunity_id).first()
     if not item:
@@ -260,8 +271,6 @@ def update_opportunity(
     new_image_url = store_opportunity_image(image)
     if new_image_url:
         item.image_url = _ensure_max("image", new_image_url, OPPORTUNITY_LIMITS["image_url"])
-    elif image_url_text:
-        item.image_url = image_url_text
     try:
         db.commit()
         return MessageResponse(message="Opportunity updated.")

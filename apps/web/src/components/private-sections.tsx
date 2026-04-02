@@ -313,7 +313,6 @@ export function AdminSection() {
     compensation: "",
     opportunity_type: "",
     apply_url: "",
-    image_url_text: "",
   };
   const blankEvent = {
     title: "",
@@ -726,10 +725,9 @@ export function AdminSection() {
                   <input name="opportunity_type" value={opportunityDraft.opportunity_type} onChange={(event) => setOpportunityDraft((current: any) => ({ ...current, opportunity_type: event.target.value }))} placeholder="Type" className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white" />
                 </div>
                 <input name="apply_url" value={opportunityDraft.apply_url} onChange={(event) => setOpportunityDraft((current: any) => ({ ...current, apply_url: event.target.value }))} placeholder="Apply URL" className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white" />
-                <input name="image_url_text" value={opportunityDraft.image_url_text} onChange={(event) => setOpportunityDraft((current: any) => ({ ...current, image_url_text: event.target.value }))} placeholder="Image link, optional" className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white" />
                 <label className="block text-sm text-slate-300">
                   Opportunity image upload
-                  <span className="mt-1 block text-xs text-slate-400">Upload an image or paste a direct image link above for hosted images.</span>
+                  <span className="mt-1 block text-xs text-slate-400">Upload an image that will appear on the opportunity cards and homepage highlights.</span>
                   <input
                     name="image"
                     type="file"
@@ -747,19 +745,19 @@ export function AdminSection() {
                     }}
                   />
                 </label>
-                {(opportunityImagePreview || opportunityDraft.image_url_text) ? (
+                {opportunityImagePreview ? (
                   <div className="rounded-3xl border border-white/10 bg-white/5 p-4">
                     <div className="text-xs uppercase tracking-[0.22em] text-slate-300">Preview</div>
                     <div className="mt-3 overflow-hidden rounded-2xl border border-white/10">
                       <SafeImage
-                        src={opportunityImagePreview ?? opportunityDraft.image_url_text}
+                        src={opportunityImagePreview}
                         fallbackSrc="/media/placeholders/opportunity-default.jpg"
                         alt="Opportunity image preview"
                         className="h-40 w-full object-cover"
                       />
                     </div>
                     <div className="mt-2 text-xs text-slate-400">
-                      Uploads are stored securely. If you paste a link, make sure it is a direct image URL.
+                      Uploads are saved with the opportunity and served by the API.
                     </div>
                   </div>
                 ) : null}
@@ -806,9 +804,9 @@ export function AdminSection() {
                           compensation: item.compensation ?? "",
                           opportunity_type: item.opportunity_type ?? "",
                           apply_url: item.apply_url ?? "",
-                          image_url_text: item.image_url?.startsWith("http") ? item.image_url : "",
                         });
                         setDescriptionSyncKey((k) => k + 1);
+                        setOpportunityImagePreview(item.image_url ? resolveAssetUrl(item.image_url) : null);
                         setMessage(`Editing ${item.title}. Update the fields and save changes.`);
                       }} className="rounded-2xl border border-cyan-300/25 bg-white/10 px-4 py-2 text-sm font-medium text-white transition hover:bg-white/15 active:scale-[0.98]">
                         Edit
