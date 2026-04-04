@@ -222,32 +222,48 @@ def seed_database(db: Session) -> None:
             ]
         )
 
-    if db.query(Newsletter).count() == 0:
-        pulse_path = Path(__file__).resolve().parent / "newsletters" / "the-pulse.html"
-        pulse_html = ""
+    def _read_seed_newsletter_html(filename: str) -> str:
+        path = Path(__file__).resolve().parent / "newsletters" / filename
         try:
-            pulse_html = pulse_path.read_text(encoding="utf-8")
+            return path.read_text(encoding="utf-8")
         except OSError:
-            pulse_html = "<h1>The Pulse</h1><p>Newsletter content will appear here.</p>"
+            return ""
 
-        db.add_all(
-            [
+    def _upsert_newsletter(*, title: str, slug: str, summary: str, content: str) -> None:
+        existing = db.query(Newsletter).filter(Newsletter.slug == slug).first()
+        if not existing:
+            db.add(
                 Newsletter(
-                    title="The Pulse",
-                    slug="the-pulse",
-                    summary="The ALX Kigali Pulse: key opportunities, hub moments, and upcoming sessions.",
-                    content=pulse_html,
+                    title=title,
+                    slug=slug,
+                    summary=summary,
+                    content=content,
                     created_by=admin.id,
-                ),
-                Newsletter(
-                    title="Opportunity Memo 002",
-                    slug="opportunity-memo-002",
-                    summary="A sharper focus on internships, fellowships, and alumni-led introductions.",
-                    content="This edition focuses on students and recent graduates seeking stronger application momentum.",
-                    created_by=admin.id,
-                ),
-            ]
-        )
+                )
+            )
+            return
+
+        # Keep seeded newsletters present and readable even if the DB already has content.
+        existing.title = title
+        existing.summary = summary
+        if content and (not existing.content or len(existing.content.strip()) < 50):
+            existing.content = content
+        if existing.created_by is None:
+            existing.created_by = admin.id
+
+    pulse_html = _read_seed_newsletter_html("the-pulse.html") or "<h1>The Pulse</h1><p>Newsletter content will appear here.</p>"
+    _upsert_newsletter(
+        title="The Pulse",
+        slug="the-pulse",
+        summary="The ALX Kigali Pulse: key opportunities, hub moments, and upcoming sessions.",
+        content=pulse_html,
+    )
+    _upsert_newsletter(
+        title="Opportunity Memo 002",
+        slug="opportunity-memo-002",
+        summary="A sharper focus on internships, fellowships, and alumni-led introductions.",
+        content="This edition focuses on students and recent graduates seeking stronger application momentum.",
+    )
 
     if db.query(MentorshipHost).count() == 0:
         db.add_all(

@@ -1,6 +1,6 @@
 "use client";
 
-import { Download, Share2 } from "lucide-react";
+import { Share2 } from "lucide-react";
 import { useMemo, useRef, useState } from "react";
 
 import { clientApi, resolveAssetUrl } from "@/lib/client-api";
@@ -147,14 +147,14 @@ export function ShareOpportunityButton({
 
       {/* Off-screen share snapshot template */}
       <div className="fixed left-[-99999px] top-0 w-[720px]">
-        <div ref={cardRef} className="relative overflow-hidden rounded-[36px] border border-white/12 bg-[#041B6E] shadow-[0_40px_120px_rgba(0,0,0,0.55)]">
-          <div className="absolute inset-0 opacity-90">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,rgba(18,91,255,0.55),transparent_50%),radial-gradient(circle_at_85%_20%,rgba(10,210,255,0.35),transparent_55%)]" />
-            <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(4,27,110,0.25),rgba(4,27,110,0.92))]" />
+        <div ref={cardRef} className="relative overflow-hidden rounded-[36px] border border-white/10 bg-[#041B6E] shadow-[0_40px_120px_rgba(0,0,0,0.55)]">
+          <div className="absolute inset-0">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_15%_12%,rgba(18,91,255,0.6),transparent_52%),radial-gradient(circle_at_90%_22%,rgba(10,210,255,0.28),transparent_58%)]" />
+            <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(4,27,110,0.25),rgba(2,10,34,0.92))]" />
           </div>
 
-          <div className="relative grid grid-cols-[0.9fr_1.1fr] gap-0">
-            <div className="relative h-[460px] overflow-hidden">
+          <div className="relative grid grid-cols-[0.95fr_1.05fr]">
+            <div className="relative h-[470px] overflow-hidden">
               <SafeImage
                 src={imageSrc}
                 fallbackSrc="/media/placeholders/opportunity-default.jpg"
@@ -162,50 +162,48 @@ export function ShareOpportunityButton({
                 className="h-full w-full object-cover"
                 crossOrigin="anonymous"
               />
-              <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(4,27,110,0.05),rgba(4,27,110,0.88))]" />
+              <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(4,27,110,0.08),rgba(2,10,34,0.92))]" />
               <div className="absolute left-8 top-8 flex items-center gap-3">
-                <div className="rounded-2xl bg-white p-2">
-                  <img
-                    src="https://tse4.mm.bing.net/th/id/OIP.VZDimiCi78ga0VSN9cd1pAHaHa?rs=1&pid=ImgDetMain&o=7&rm=3"
-                    alt="ALX"
-                    className="h-10 w-10 object-contain"
-                    crossOrigin="anonymous"
-                  />
+                <div className="rounded-2xl border border-white/15 bg-white/10 px-3 py-2 text-sm font-semibold tracking-tight text-white">
+                  alx
                 </div>
-                <div className="text-xs font-semibold uppercase tracking-[0.28em] text-white/80">Opportunities</div>
+                <div className="text-xs font-semibold uppercase tracking-[0.26em] text-white/75">
+                  Opportunities
+                </div>
               </div>
             </div>
 
             <div className="p-10">
               <div className="space-y-5">
-                <div className="inline-flex w-fit items-center gap-2 rounded-full border border-white/15 bg-white/8 px-4 py-2 text-xs uppercase tracking-[0.24em] text-white/85">
-                  Snapshot for WhatsApp
-                  <Download className="h-4 w-4" />
-                </div>
-                <div className="space-y-3">
-                  <div className="text-4xl font-semibold leading-tight text-white">{opportunity.title}</div>
-                  <div className="text-base text-cyan-100">{opportunity.organization}</div>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="rounded-3xl border border-white/12 bg-white/8 px-5 py-4">
-                    <div className="text-xs uppercase tracking-[0.22em] text-white/65">Deadline</div>
-                    <div className="mt-2 text-sm font-semibold text-white">{summary.deadline}</div>
+                <div className="rounded-[30px] border border-white/12 bg-white/8 px-7 py-7">
+                  <div className="text-xs font-semibold uppercase tracking-[0.22em] text-white/70">ALX Opportunities and Alumni Hub</div>
+                  <div className="mt-4 text-[34px] font-semibold leading-[1.1] text-white">{opportunity.title}</div>
+                  <div className="mt-2 text-base text-cyan-100">{opportunity.organization}</div>
+
+                  <div className="mt-5 grid grid-cols-2 gap-4">
+                    <div className="rounded-2xl border border-white/12 bg-white/10 px-4 py-3">
+                      <div className="text-xs uppercase tracking-[0.22em] text-white/60">Deadline</div>
+                      <div className="mt-1 text-sm font-semibold text-white">{summary.deadline}</div>
+                    </div>
+                    <div className="rounded-2xl border border-white/12 bg-white/10 px-4 py-3">
+                      <div className="text-xs uppercase tracking-[0.22em] text-white/60">Location</div>
+                      <div className="mt-1 text-sm font-semibold text-white">{summary.location}</div>
+                    </div>
                   </div>
-                  <div className="rounded-3xl border border-white/12 bg-white/8 px-5 py-4">
-                    <div className="text-xs uppercase tracking-[0.22em] text-white/65">Location</div>
-                    <div className="mt-2 text-sm font-semibold text-white">{summary.location}</div>
+
+                  <div className="mt-5 rounded-2xl border border-white/12 bg-white/6 px-5 py-4 text-sm leading-7 text-white/82">
+                    {String(opportunity.excerpt || "Open the link for full details and application steps.")}
                   </div>
                 </div>
-                <div className="rounded-[28px] border border-white/12 bg-white/6 px-6 py-5 text-sm leading-7 text-white/80">
-                  {String(opportunity.excerpt || "Open the link for full details and application steps.")}
-                </div>
+
                 <div className="rounded-3xl bg-white px-6 py-5">
-                  <div className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-600">Open link</div>
+                  <div className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-600">Open opportunity</div>
                   <div className="mt-2 text-sm font-semibold text-slate-950">{shareUrl}</div>
                 </div>
               </div>
-              <div className="mt-6 text-xs text-white/65">
-                Shared from ALX Opportunities and Alumni Hub.
+
+              <div className="mt-6 text-xs text-white/60">
+                Share on WhatsApp with the link above.
               </div>
             </div>
           </div>

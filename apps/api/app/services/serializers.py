@@ -30,6 +30,9 @@ def serialize_opportunity(item: Opportunity) -> dict:
         # Never fail serialization for admin/public lists.
         views_count = 0
 
+    now = datetime.utcnow()
+    is_expired = bool(item.deadline and isinstance(item.deadline, datetime) and item.deadline < now)
+
     return {
         "id": item.id,
         "title": item.title,
@@ -44,6 +47,7 @@ def serialize_opportunity(item: Opportunity) -> dict:
         "opportunity_type": item.opportunity_type,
         "deadline": _iso(item.deadline),
         "deadline_label": item.deadline_label,
+        "is_expired": is_expired,
         "apply_url": item.apply_url,
         "image_url": item.image_url,
         "featured": item.featured,

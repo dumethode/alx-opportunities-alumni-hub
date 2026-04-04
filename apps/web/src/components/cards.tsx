@@ -13,6 +13,7 @@ export function OpportunityCard({ opportunity }: { opportunity: Opportunity }) {
     ? new Date(opportunity.deadline).toLocaleDateString()
     : opportunity.deadline_label ?? "Rolling";
   const primaryImage = resolveAssetUrl(opportunity.image_url);
+  const expired = Boolean(opportunity.is_expired);
 
   return (
     <GlassCard className="group flex h-full flex-col justify-between gap-6 overflow-hidden p-0 transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_90px_rgba(10,175,255,0.18)]">
@@ -28,6 +29,11 @@ export function OpportunityCard({ opportunity }: { opportunity: Opportunity }) {
           <span className="rounded-full border border-cyan-300/20 bg-cyan-300/10 px-3 py-1 text-xs text-cyan-100">
             {opportunity.category}
           </span>
+          {expired ? (
+            <span className="rounded-full border border-red-400/25 bg-red-500/12 px-3 py-1 text-xs font-semibold text-red-100">
+              Deadline passed
+            </span>
+          ) : null}
           <span className="rounded-full border border-white/10 px-3 py-1 text-xs text-slate-300">
             {opportunity.views_count} reads
           </span>
@@ -41,8 +47,8 @@ export function OpportunityCard({ opportunity }: { opportunity: Opportunity }) {
       <div className="space-y-4">
         <div className="flex items-center justify-between text-xs text-slate-400">
           <span>{opportunity.location ?? "Flexible location"}</span>
-          <span>
-            Deadline {deadlineText}
+          <span className={expired ? "text-red-200" : ""}>
+            Deadline <span className={expired ? "font-semibold" : ""}>{deadlineText}</span>
           </span>
         </div>
         <div className="grid gap-3 md:grid-cols-2">
@@ -54,13 +60,15 @@ export function OpportunityCard({ opportunity }: { opportunity: Opportunity }) {
             <ExternalLink className="h-4 w-4" />
           </Link>
           {opportunity.apply_url ? (
-            <Link
+            <a
               href={opportunity.apply_url}
+              target="_blank"
+              rel="noopener noreferrer"
               className="alx-apply-cta w-full rounded-2xl px-4 py-3 text-sm font-semibold"
             >
               Apply
               <ExternalLink className="h-4 w-4" />
-            </Link>
+            </a>
           ) : (
             <div className="flex items-center justify-center rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-slate-300">
               Apply link TBA

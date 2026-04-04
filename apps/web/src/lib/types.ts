@@ -12,6 +12,7 @@ export type Opportunity = {
   opportunity_type?: string | null;
   deadline?: string | null;
   deadline_label?: string | null;
+  is_expired?: boolean;
   apply_url?: string | null;
   image_url?: string | null;
   featured: boolean;

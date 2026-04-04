@@ -42,11 +42,21 @@ export default async function OpportunityDetailPage({
           <div className="rounded-3xl border border-white/10 bg-slate-950/50 px-5 py-4 text-sm text-slate-300">
             Featured listings are reviewed for clarity and legitimacy before they are promoted in the hub.
           </div>
+          {opportunity.is_expired ? (
+            <div className="rounded-3xl border border-red-400/25 bg-red-500/12 px-5 py-4 text-sm text-red-100">
+              This opportunity deadline has passed. You can still review the listing, but confirm whether applications are still open.
+            </div>
+          ) : null}
           <div className="flex flex-wrap gap-4">
             {opportunity.apply_url ? (
-              <Link href={opportunity.apply_url} className="alx-apply-cta rounded-2xl px-5 py-3 text-sm font-semibold">
+              <a
+                href={opportunity.apply_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="alx-apply-cta rounded-2xl px-5 py-3 text-sm font-semibold"
+              >
                 Apply now
-              </Link>
+              </a>
             ) : null}
             <ShareOpportunityButton opportunity={opportunity} />
             <SaveOpportunityButton opportunityId={opportunity.id} />

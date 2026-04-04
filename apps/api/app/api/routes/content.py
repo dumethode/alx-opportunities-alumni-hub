@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from fastapi import APIRouter, HTTPException, Query, Response
-from sqlalchemy import func
+from sqlalchemy import case, func
 
 from app.api.deps import DbDep
 from app.models.models import ContactMessage, Event, HubLocation, Newsletter, Opportunity, OpportunityView, Testimonial, UploadedAsset
@@ -40,10 +40,15 @@ def get_asset(asset_id: str, db: DbDep) -> Response:
 
 @router.get("/home")
 def home(db: DbDep) -> dict:
+    now = datetime.utcnow()
+    expired_first = case(
+        ((Opportunity.deadline.isnot(None)) & (Opportunity.deadline < now), 1),
+        else_=0,
+    )
     featured_opportunities = (
         db.query(Opportunity)
         .filter(Opportunity.featured.is_(True))
-        .order_by(Opportunity.published_at.desc())
+        .order_by(expired_first.asc(), Opportunity.published_at.desc())
         .limit(3)
         .all()
     )
