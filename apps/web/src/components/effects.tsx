@@ -84,27 +84,30 @@ export function Reveal({
   className?: string;
 }) {
   const ref = useRef<HTMLDivElement | null>(null);
-  const [visible, setVisible] = useState(false);
+  // Show content immediately to avoid large blank gaps during hydration.
+  // For below-the-fold blocks, we opt back into reveal animation after mount.
+  const [visible, setVisible] = useState(true);
 
   useEffect(() => {
     const node = ref.current;
     if (!node) return;
 
-    // If the element is already in view on first paint (common on mobile),
-    // show it immediately so we do not reserve a large blank space.
+    let rect: DOMRect | null = null;
     try {
-      const rect = node.getBoundingClientRect();
-      if (rect.top < window.innerHeight * 0.9) {
-        setVisible(true);
-        return;
-      }
+      rect = node.getBoundingClientRect();
     } catch {
-      // ignore
+      rect = null;
     }
 
     if (typeof IntersectionObserver === "undefined") {
       setVisible(true);
       return;
+    }
+
+    // If the element is far below the viewport, re-enable the reveal animation
+    // without causing visible flicker on the current screen.
+    if (rect && rect.top > window.innerHeight * 1.15) {
+      setVisible(false);
     }
 
     const observer = new IntersectionObserver(

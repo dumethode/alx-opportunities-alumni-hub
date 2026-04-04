@@ -99,7 +99,7 @@ export function DashboardSection() {
 export function ResourceSection() {
   return (
     <RequireAuth title="Resources">
-      <div className="grid gap-8 xl:grid-cols-2">
+      <div className="grid gap-8 lg:grid-cols-2">
         <div id="resume-builder" className="rounded-[28px] border border-white/10 bg-white/5 p-6">
           <div className="mb-5 text-xl font-semibold text-white">Resume Template Builder</div>
           <DocumentBuilder type="resume" />
