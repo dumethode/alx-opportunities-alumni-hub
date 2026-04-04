@@ -1300,34 +1300,42 @@ export function ProfileSection() {
   );
 }
 
-export function NewsletterArchiveSection() {
+export function NewsletterArchiveSection({ requireAuth = true }: { requireAuth?: boolean }) {
   const [items, setItems] = useState<any[]>([]);
   useEffect(() => {
     clientApi<{ items: any[] }>("/newsletters").then((data) => setItems(data.items)).catch(() => setItems([]));
   }, []);
 
+  const content = (
+    <div className="grid gap-4 md:grid-cols-2">
+      {items.length ? items.map((item) => (
+        <div key={item.id} className="rounded-[28px] border border-[color:var(--alx-border)] bg-[var(--alx-panel)] p-6 shadow-[0_18px_48px_rgba(4,27,110,0.10)]">
+          <div className="text-lg font-semibold text-[var(--alx-text-strong)]">{item.title}</div>
+          <div className="mt-2 text-sm text-[var(--alx-text-muted)]">{item.summary}</div>
+          <div className="mt-4 text-xs uppercase tracking-[0.2em] text-[var(--alx-accent-text)]">
+            {item.published_at ? new Date(item.published_at).toLocaleDateString() : ""}
+          </div>
+          <div className="mt-4">
+            <Link href={`/newsletters/${item.slug}`} className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--alx-link)] hover:text-[var(--alx-link-strong)]">
+              Open newsletter
+            </Link>
+          </div>
+        </div>
+      )) : (
+        <div className="rounded-[28px] border border-[color:var(--alx-border)] bg-[var(--alx-panel)] p-6 text-[var(--alx-text-muted)] shadow-[0_18px_48px_rgba(4,27,110,0.10)]">
+          No newsletters have been published yet.
+        </div>
+      )}
+    </div>
+  );
+
   return (
-    <RequireAuth title="Newsletter archive">
-      <div className="grid gap-4 md:grid-cols-2">
-        {items.length ? items.map((item) => (
-          <div key={item.id} className="rounded-[28px] border border-white/10 bg-white/5 p-6">
-            <div className="text-lg font-semibold text-white">{item.title}</div>
-            <div className="mt-2 text-sm text-slate-300">{item.summary}</div>
-            <div className="mt-4 text-xs uppercase tracking-[0.2em] text-cyan-100">
-              {new Date(item.published_at).toLocaleDateString()}
-            </div>
-            <div className="mt-4">
-              <Link href={`/newsletters/${item.slug}`} className="inline-flex items-center gap-2 text-sm font-semibold text-cyan-200 hover:text-white">
-                Open newsletter
-              </Link>
-            </div>
-          </div>
-        )) : (
-          <div className="rounded-[28px] border border-white/10 bg-white/5 p-6 text-slate-300">
-            No newsletters have been published yet.
-          </div>
-        )}
-      </div>
-    </RequireAuth>
+    requireAuth ? (
+      <RequireAuth title="Newsletter archive">
+        {content}
+      </RequireAuth>
+    ) : (
+      content
+    )
   );
 }
