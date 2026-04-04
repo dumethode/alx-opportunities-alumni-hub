@@ -1,13 +1,13 @@
 import Link from "next/link";
 
-import { SaveOpportunityButton } from "@/components/actions";
+import { SaveOpportunityButton, ShareOpportunityButton } from "@/components/actions";
 import { OpportunityCard } from "@/components/cards";
+import { SafeImage } from "@/components/safe-image";
 import { GlassCard } from "@/components/ui";
 import { api } from "@/lib/api";
 import { resolveAssetUrl } from "@/lib/client-api";
 
-const fallbackOpportunityImage =
-  "https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=1200&q=80";
+const fallbackOpportunityImage = "/media/placeholders/opportunity-default.jpg";
 
 export default async function OpportunityDetailPage({
   params,
@@ -22,8 +22,9 @@ export default async function OpportunityDetailPage({
     <div className="content-grid page-section">
       <div className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
         <GlassCard className="space-y-6">
-          <img
-            src={resolveAssetUrl(opportunity.image_url) ?? fallbackOpportunityImage}
+          <SafeImage
+            src={resolveAssetUrl(opportunity.image_url)}
+            fallbackSrc={fallbackOpportunityImage}
             alt={opportunity.title}
             className="h-72 w-full rounded-[22px] object-cover"
           />
@@ -43,10 +44,11 @@ export default async function OpportunityDetailPage({
           </div>
           <div className="flex flex-wrap gap-4">
             {opportunity.apply_url ? (
-              <Link href={opportunity.apply_url} className="rounded-2xl bg-white px-5 py-3 text-sm font-semibold text-slate-950">
+              <Link href={opportunity.apply_url} className="alx-apply-cta rounded-2xl px-5 py-3 text-sm font-semibold">
                 Apply now
               </Link>
             ) : null}
+            <ShareOpportunityButton opportunity={opportunity} />
             <SaveOpportunityButton opportunityId={opportunity.id} />
             <Link href="/resources" className="rounded-2xl border border-white/10 bg-white/5 px-5 py-3 text-sm font-semibold text-white">
               Add to tracker

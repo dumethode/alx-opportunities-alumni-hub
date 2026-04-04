@@ -1316,6 +1316,11 @@ export function NewsletterArchiveSection() {
             <div className="mt-4 text-xs uppercase tracking-[0.2em] text-cyan-100">
               {new Date(item.published_at).toLocaleDateString()}
             </div>
+            <div className="mt-4">
+              <Link href={`/newsletters/${item.slug}`} className="inline-flex items-center gap-2 text-sm font-semibold text-cyan-200 hover:text-white">
+                Open newsletter
+              </Link>
+            </div>
           </div>
         )) : (
           <div className="rounded-[28px] border border-white/10 bg-white/5 p-6 text-slate-300">

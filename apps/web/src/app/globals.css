@@ -250,6 +250,44 @@ a {
   animation: alx-drift 8s ease-in-out infinite;
 }
 
+.alx-apply-cta {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: linear-gradient(135deg, #1ee3ff, #1c7eff);
+  color: #08192e;
+  box-shadow: 0 18px 42px rgba(18, 91, 255, 0.24);
+  transition: transform 200ms ease, box-shadow 200ms ease, filter 200ms ease;
+  overflow: hidden;
+}
+
+.alx-apply-cta::before {
+  content: "";
+  position: absolute;
+  inset: -40%;
+  background: linear-gradient(120deg, transparent 0%, rgba(255, 255, 255, 0.45) 45%, transparent 100%);
+  transform: translateX(-140%) rotate(10deg);
+  animation: alx-sheen 4.8s ease-in-out infinite;
+}
+
+.alx-apply-cta:hover {
+  transform: translateY(-1px) scale(1.01);
+  box-shadow: 0 22px 52px rgba(18, 91, 255, 0.28);
+  filter: saturate(1.05);
+}
+
+.alx-apply-cta:active {
+  transform: scale(0.99);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .alx-apply-cta::before {
+    animation: none;
+  }
+}
+
 .kenburns-slow {
   animation: alx-kenburns 18s ease-in-out infinite alternate;
   will-change: transform;

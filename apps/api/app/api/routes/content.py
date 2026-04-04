@@ -170,6 +170,14 @@ def list_newsletters(db: DbDep) -> dict:
     return {"items": [serialize_newsletter(item) for item in items]}
 
 
+@router.get("/newsletters/{slug}")
+def get_newsletter(slug: str, db: DbDep) -> dict:
+    item = db.query(Newsletter).filter(Newsletter.slug == slug).first()
+    if not item:
+        raise HTTPException(status_code=404, detail="Newsletter not found")
+    return {"item": serialize_newsletter(item)}
+
+
 @router.post("/contact", response_model=MessageResponse)
 def create_contact_message(payload: ContactPayload, db: DbDep) -> MessageResponse:
     db.add(ContactMessage(**payload.model_dump()))

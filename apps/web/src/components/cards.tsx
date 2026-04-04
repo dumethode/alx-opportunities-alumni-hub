@@ -45,13 +45,28 @@ export function OpportunityCard({ opportunity }: { opportunity: Opportunity }) {
             Deadline {deadlineText}
           </span>
         </div>
-        <Link
-          href={`/opportunities/${opportunity.slug}`}
-          className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-[linear-gradient(135deg,#1ee3ff,#1c7eff)] px-4 py-3 text-sm font-semibold text-slate-950 transition hover:scale-[1.01]"
-        >
-          Read More
-          <ExternalLink className="h-4 w-4" />
-        </Link>
+        <div className="grid gap-3 md:grid-cols-2">
+          <Link
+            href={`/opportunities/${opportunity.slug}`}
+            className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-[linear-gradient(135deg,#1ee3ff,#1c7eff)] px-4 py-3 text-sm font-semibold text-slate-950 transition hover:scale-[1.01]"
+          >
+            Read More
+            <ExternalLink className="h-4 w-4" />
+          </Link>
+          {opportunity.apply_url ? (
+            <Link
+              href={opportunity.apply_url}
+              className="alx-apply-cta w-full rounded-2xl px-4 py-3 text-sm font-semibold"
+            >
+              Apply
+              <ExternalLink className="h-4 w-4" />
+            </Link>
+          ) : (
+            <div className="flex items-center justify-center rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-slate-300">
+              Apply link TBA
+            </div>
+          )}
+        </div>
       </div>
       </div>
     </GlassCard>
@@ -123,8 +138,8 @@ export function NewsletterCard({ newsletter }: { newsletter: Newsletter }) {
         <h3 className="text-lg font-semibold text-white">{newsletter.title}</h3>
         <p className="text-sm leading-7 text-slate-300">{newsletter.summary}</p>
       </div>
-      <Link href="/newsletters" className="inline-flex items-center gap-2 text-sm text-cyan-200 hover:text-white">
-        View archive
+      <Link href={`/newsletters/${newsletter.slug}`} className="inline-flex items-center gap-2 text-sm text-cyan-200 hover:text-white">
+        Open newsletter
         <ExternalLink className="h-4 w-4" />
       </Link>
     </GlassCard>

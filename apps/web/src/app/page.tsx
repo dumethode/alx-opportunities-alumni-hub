@@ -253,7 +253,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="content-grid page-section">
+      <section className="content-grid pt-10 pb-14 md:pt-14 md:pb-20">
         <Reveal>
         <SectionHeading
           eyebrow="Events"
@@ -302,7 +302,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="content-grid page-section">
+      <section className="content-grid pt-10 pb-16 md:pt-14 md:pb-24">
         <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
           <div className="space-y-6">
             <Reveal>
@@ -365,7 +365,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="content-grid page-section">
+      <section className="content-grid pt-10 pb-16 md:pt-14 md:pb-24">
         <Reveal>
         <SectionHeading
           eyebrow="Newsletters"

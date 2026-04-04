@@ -29,5 +29,5 @@ export const api = {
   getEvent: (slug: string) => request<any>(`/events/${slug}`),
   getLocations: () => request<any>("/hub-locations"),
   getNewsletters: () => request<any>("/newsletters"),
+  getNewsletter: (slug: string) => request<any>(`/newsletters/${slug}`),
 };
-

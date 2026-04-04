@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from pathlib import Path
 
 from sqlalchemy.orm import Session
 
@@ -222,18 +223,25 @@ def seed_database(db: Session) -> None:
         )
 
     if db.query(Newsletter).count() == 0:
+        pulse_path = Path(__file__).resolve().parent / "newsletters" / "the-pulse.html"
+        pulse_html = ""
+        try:
+            pulse_html = pulse_path.read_text(encoding="utf-8")
+        except OSError:
+            pulse_html = "<h1>The Pulse</h1><p>Newsletter content will appear here.</p>"
+
         db.add_all(
             [
                 Newsletter(
-                    title="ALX Opportunity Memo 001",
-                    slug="alx-opportunity-memo-001",
-                    summary="Featured roles, grants, and community dates for the next two weeks.",
-                    content="This memo highlights premium opportunities, key deadlines, and the strongest relationship-building moments ahead.",
+                    title="The Pulse",
+                    slug="the-pulse",
+                    summary="The ALX Kigali Pulse: key opportunities, hub moments, and upcoming sessions.",
+                    content=pulse_html,
                     created_by=admin.id,
                 ),
                 Newsletter(
-                    title="ALX Opportunity Memo 002",
-                    slug="alx-opportunity-memo-002",
+                    title="Opportunity Memo 002",
+                    slug="opportunity-memo-002",
                     summary="A sharper focus on internships, fellowships, and alumni-led introductions.",
                     content="This edition focuses on students and recent graduates seeking stronger application momentum.",
                     created_by=admin.id,
