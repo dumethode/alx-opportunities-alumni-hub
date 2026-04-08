@@ -27,13 +27,30 @@ export async function GET(
   const { slug } = await context.params;
   const fallbackUrl = new URL(fallbackPath, request.url);
 
+  async function serveFallback(): Promise<Response> {
+    try {
+      const res = await fetchWithTimeout(fallbackUrl.toString(), { cache: "force-cache" }, 8000);
+      const body = await res.arrayBuffer();
+      const contentType = res.headers.get("content-type") ?? "image/jpeg";
+      return new Response(body, {
+        status: 200,
+        headers: {
+          "Content-Type": contentType,
+          "Cache-Control": "public, s-maxage=86400, stale-while-revalidate=604800",
+        },
+      });
+    } catch {
+      return new Response("", { status: 404 });
+    }
+  }
+
   try {
     const oppRes = await fetchWithTimeout(
       `${apiBaseUrl()}/opportunities/${encodeURIComponent(slug)}?track_view=false`,
       { cache: "no-store" },
     );
     if (!oppRes.ok) {
-      return Response.redirect(fallbackUrl, 307);
+      return await serveFallback();
     }
 
     const payload = (await oppRes.json()) as any;
@@ -42,12 +59,12 @@ export async function GET(
       imageUrl && imageUrl.startsWith("http") ? imageUrl : imageUrl ? `${apiOrigin()}${imageUrl}` : null;
 
     if (!resolved) {
-      return Response.redirect(fallbackUrl, 307);
+      return await serveFallback();
     }
 
     const imgRes = await fetchWithTimeout(resolved, { cache: "force-cache" }, 12000);
     if (!imgRes.ok) {
-      return Response.redirect(fallbackUrl, 307);
+      return await serveFallback();
     }
 
     const contentType = imgRes.headers.get("content-type") ?? "image/jpeg";
@@ -61,6 +78,6 @@ export async function GET(
       },
     });
   } catch {
-    return Response.redirect(fallbackUrl, 307);
+    return await serveFallback();
   }
 }

@@ -187,8 +187,9 @@ a {
 }
 
 .reveal-block {
-  opacity: 0;
-  transform: translateY(32px) scale(0.985);
+  /* Never hide content by default, hidden reveal blocks cause large "blank" gaps on first load. */
+  opacity: 1;
+  transform: translateY(0) scale(1);
   transition: opacity 0.75s ease, transform 0.75s ease;
 }
 
