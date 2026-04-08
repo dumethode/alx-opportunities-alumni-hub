@@ -2,13 +2,28 @@ import Link from "next/link";
 import { ArrowRight, BadgeCheck, CalendarDays, MapPin, ShieldCheck, Sparkles } from "lucide-react";
 
 import { EventCard, NewsletterCard, OpportunityCard, TestimonialCard } from "@/components/cards";
-import { AnimatedCounter, CarouselStrip, HeroAtmosphere, HeroBackdrop, HeroSlides, RoleMarquee } from "@/components/effects";
+import { AnimatedCounter, HeroAtmosphere, HeroBackdrop, HeroSlides } from "@/components/effects";
 import { HubMap } from "@/components/map";
 import { GlassCard, SectionHeading } from "@/components/ui";
 import { api } from "@/lib/api";
 
 export default async function HomePage() {
   const home = await api.getHome();
+  const categoryChips = [
+    { label: "Jobs", href: "/opportunities?category=jobs" },
+    { label: "Internships", href: "/opportunities?category=internships" },
+    { label: "Scholarships", href: "/opportunities?category=scholarships" },
+    { label: "Fellowships", href: "/opportunities?category=fellowships" },
+    { label: "Funding", href: "/opportunities?category=funding" },
+    { label: "Tenders", href: "/opportunities?category=tenders" },
+    { label: "Deals", href: "/opportunities?category=deals" },
+    { label: "Events", href: "/events" },
+    { label: "Mentorship", href: "/services#mentorship" },
+    { label: "Supporting Letter", href: "/services#supporting-letter" },
+    { label: "Resume Builder", href: "/resources#resume-builder" },
+    { label: "Cover Letter Builder", href: "/resources#cover-letter-builder" },
+    { label: "Find Alumni", href: "/alumni" },
+  ];
 
   return (
     <div>
@@ -177,27 +192,25 @@ export default async function HomePage() {
             description="A fast way to scan where your next opportunity can take you."
           />
           <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-            <RoleMarquee
-              title="Popular roles and categories"
-              items={[
-                "Data Analyst",
-                "Software Engineer",
-                "Product Analyst",
-                "Business Analyst",
-                "Solutions Engineer",
-                "AI Specialist",
-                "Frontend Developer",
-                "Backend Developer",
-                "DevOps Engineer",
-                "Cybersecurity Analyst",
-                "UI Designer",
-                "Project Manager",
-                "Internships",
-                "Fellowships",
-                "Scholarships",
-                "Funding",
-              ]}
-            />
+            <GlassCard className="space-y-4">
+              <div className="text-sm font-semibold text-[var(--alx-text-strong)]">
+                Popular categories and services
+              </div>
+              <p className="text-sm leading-7 text-[var(--alx-text-muted)]">
+                Everything listed here is available inside the hub. No extra scrolling is required to use these sections.
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {categoryChips.map((chip) => (
+                  <Link
+                    key={chip.label}
+                    href={chip.href}
+                    className="rounded-full border border-[color:var(--alx-border)] bg-[var(--alx-pill)] px-4 py-2 text-sm font-medium text-[var(--alx-text-strong)] transition hover:bg-[var(--alx-pill-active)] active:scale-[0.98]"
+                  >
+                    {chip.label}
+                  </Link>
+                ))}
+              </div>
+            </GlassCard>
             <GlassCard className="space-y-3">
               <div className="text-lg font-semibold text-[var(--alx-text-strong)]">Quick paths</div>
               <p className="text-sm leading-7 text-[var(--alx-text-muted)]">
@@ -261,14 +274,17 @@ export default async function HomePage() {
             description="Career nights, networking breakfasts, mentoring touchpoints, and relationship-led programming."
             action={{ href: "/events", label: "Explore events" }}
           />
-          <div className="section-fade-guard">
-            <CarouselStrip>
-              {home.featured_events.map((event: any) => (
-                <div key={event.id} className="min-w-[320px] snap-start lg:min-w-[360px]">
-                  <EventCard event={event} />
-                </div>
-              ))}
-            </CarouselStrip>
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {home.featured_events.length ? (
+              home.featured_events.map((event: any) => <EventCard key={event.id} event={event} />)
+            ) : (
+              <GlassCard className="space-y-3 md:col-span-2 lg:col-span-3">
+                <div className="text-lg font-semibold text-[var(--alx-text-strong)]">No featured events yet</div>
+                <p className="text-sm leading-7 text-[var(--alx-text-muted)]">
+                  Once an admin publishes events, they will appear here automatically.
+                </p>
+              </GlassCard>
+            )}
           </div>
         </div>
       </section>
@@ -282,14 +298,19 @@ export default async function HomePage() {
                 title="Built to feel supportive, useful, and launch-ready"
                 description="A serious hub for career execution, not just a listing board."
               />
-              <div className="section-fade-guard">
-                <CarouselStrip>
-                  {home.testimonials.map((testimonial: any) => (
-                    <div key={testimonial.id} className="min-w-[300px] snap-start lg:min-w-[340px]">
-                      <TestimonialCard testimonial={testimonial} />
-                    </div>
-                  ))}
-                </CarouselStrip>
+              <div className="grid gap-6 md:grid-cols-2">
+                {home.testimonials.length ? (
+                  home.testimonials.map((testimonial: any) => (
+                    <TestimonialCard key={testimonial.id} testimonial={testimonial} />
+                  ))
+                ) : (
+                  <GlassCard className="space-y-3 md:col-span-2">
+                    <div className="text-lg font-semibold text-[var(--alx-text-strong)]">No testimonials yet</div>
+                    <p className="text-sm leading-7 text-[var(--alx-text-muted)]">
+                      When admins publish testimonials, they will appear here.
+                    </p>
+                  </GlassCard>
+                )}
               </div>
             </div>
 
@@ -344,4 +365,3 @@ export default async function HomePage() {
     </div>
   );
 }
-
