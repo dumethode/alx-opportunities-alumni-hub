@@ -32,9 +32,7 @@ export async function generateMetadata({
     const description =
       opportunity.excerpt ||
       `View details and apply for ${opportunity.title} on the ALX Opportunities & Alumni Hub.`;
-    const absoluteImage =
-      resolveAssetUrl(opportunity.image_url) ??
-      new URL(fallbackOpportunityImage, siteUrl).toString();
+    const absoluteImage = new URL(`/api/og/opportunity-image/${slug}`, siteUrl).toString();
 
     return {
       title,

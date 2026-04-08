@@ -114,13 +114,18 @@ def list_opportunities(
 
 
 @router.get("/opportunities/{slug}")
-def get_opportunity(slug: str, db: DbDep) -> dict:
+def get_opportunity(
+    slug: str,
+    db: DbDep,
+    track_view: bool = Query(default=True),
+) -> dict:
     item = db.query(Opportunity).filter(Opportunity.slug == slug).first()
     if not item:
         raise HTTPException(status_code=404, detail="Opportunity not found")
-    db.add(OpportunityView(opportunity_id=item.id, session_key=f"public-{datetime.utcnow().timestamp()}"))
-    db.commit()
-    db.refresh(item)
+    if track_view:
+        db.add(OpportunityView(opportunity_id=item.id, session_key=f"public-{datetime.utcnow().timestamp()}"))
+        db.commit()
+        db.refresh(item)
     related = (
         db.query(Opportunity)
         .filter(Opportunity.category_id == item.category_id, Opportunity.id != item.id)

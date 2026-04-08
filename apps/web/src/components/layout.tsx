@@ -404,7 +404,7 @@ export function SiteShell({ children }: { children: ReactNode }) {
 
       <main className="relative z-10 pt-24 md:pt-28">{children}</main>
 
-      <footer className="on-footer relative z-10 mt-24 border-t border-[color:var(--alx-border)] bg-[var(--alx-footer)] transition-colors duration-300">
+      <footer className="on-footer relative z-10 mt-12 md:mt-16 border-t border-[color:var(--alx-border)] bg-[var(--alx-footer)] transition-colors duration-300">
         <div className="mx-auto max-w-7xl px-5 py-14 md:px-8">
           <div className="grid gap-10 xl:grid-cols-[1.05fr_1.35fr_0.9fr]">
             <div className="space-y-5 rounded-[28px] border border-[color:var(--alx-border)] bg-[var(--alx-panel)] p-6">
