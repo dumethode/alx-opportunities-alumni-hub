@@ -29,11 +29,11 @@ export function SaveOpportunityButton({ opportunityId }: { opportunityId: number
       <button
         onClick={save}
         disabled={loading}
-        className="rounded-2xl border border-white/10 bg-white/5 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/15 active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none"
+        className="alx-btn alx-btn-secondary inline-flex items-center justify-center rounded-2xl px-5 py-3 text-sm font-semibold disabled:opacity-50 disabled:pointer-events-none"
       >
         {loading ? "Saving..." : "Save opportunity"}
       </button>
-      {message ? <div className="text-sm text-cyan-100">{message}</div> : null}
+      {message ? <div className="text-sm text-[var(--alx-text-muted)]">{message}</div> : null}
     </div>
   );
 }
@@ -138,12 +138,12 @@ export function ShareOpportunityButton({
       <button
         onClick={shareViaWhatsApp}
         disabled={loading}
-        className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/15 active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none"
+        className="alx-btn alx-btn-secondary inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-3 text-sm font-semibold disabled:opacity-50 disabled:pointer-events-none"
       >
         <Share2 className="h-4 w-4" />
         {loading ? "Preparing share..." : "Share on WhatsApp"}
       </button>
-      {message ? <div className="text-sm text-cyan-100">{message}</div> : null}
+      {message ? <div className="text-sm text-[var(--alx-text-muted)]">{message}</div> : null}
 
       {/* Off-screen share snapshot template */}
       <div className="fixed left-[-99999px] top-0 w-[720px]">

@@ -50,7 +50,7 @@ export function GlassCard({
 }) {
   return (
     <div
-      className={`rounded-[28px] border border-[color:var(--alx-border)] bg-[var(--alx-panel)] p-6 shadow-[0_18px_48px_rgba(4,27,110,0.10)] ${className}`}
+      className={`alx-card rounded-[28px] border p-6 backdrop-blur-xl ${className}`}
     >
       {children}
     </div>

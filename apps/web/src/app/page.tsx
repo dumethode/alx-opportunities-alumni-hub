@@ -66,14 +66,14 @@ export default async function HomePage() {
                 <div className="flex flex-wrap gap-4">
                   <Link
                     href="/opportunities"
-                    className="inline-flex items-center gap-2 rounded-2xl bg-white px-5 py-3 text-sm font-semibold text-slate-950"
+                    className="alx-btn inline-flex items-center gap-2 rounded-2xl bg-white px-5 py-3 text-sm font-semibold text-slate-950 shadow-[0_18px_50px_rgba(0,0,0,0.18)] transition hover:-translate-y-0.5 hover:shadow-[0_24px_70px_rgba(0,0,0,0.22)]"
                   >
                     Browse opportunities
                     <ArrowRight className="h-4 w-4" />
                   </Link>
                   <Link
                     href="/events"
-                    className="inline-flex items-center gap-2 rounded-2xl border border-white/12 bg-white/6 px-5 py-3 text-sm font-semibold text-white"
+                    className="alx-btn inline-flex items-center gap-2 rounded-2xl border border-white/14 bg-white/6 px-5 py-3 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:bg-white/10"
                   >
                     View events
                   </Link>
@@ -184,8 +184,8 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="py-10 md:py-14">
-        <div className="content-grid space-y-6">
+      <section className="py-8 md:py-12">
+        <div className="content-grid space-y-5">
           <SectionHeading
             eyebrow="Career Tracks"
             title="Explore roles that ALX learners are moving into"
@@ -244,8 +244,8 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="py-10 md:py-14">
-        <div className="content-grid space-y-6">
+      <section className="py-8 md:py-12">
+        <div className="content-grid space-y-5">
           <SectionHeading
             eyebrow="Featured Opportunities"
             title="Fresh openings with practical context"
@@ -259,9 +259,18 @@ export default async function HomePage() {
             <Link href="/opportunities?category=scholarships" className="rounded-full border border-[color:var(--alx-border)] bg-[var(--alx-panel)] px-4 py-2 text-sm text-[var(--alx-text-strong)] transition hover:bg-[var(--alx-pill)]">Scholarships</Link>
           </div>
           <div className="grid gap-6 lg:grid-cols-3">
-            {home.featured_opportunities.map((opportunity: any) => (
-              <OpportunityCard key={opportunity.id} opportunity={opportunity} />
-            ))}
+            {home.featured_opportunities.length ? (
+              home.featured_opportunities.map((opportunity: any) => (
+                <OpportunityCard key={opportunity.id} opportunity={opportunity} />
+              ))
+            ) : (
+              <GlassCard className="space-y-3 lg:col-span-3">
+                <div className="text-lg font-semibold text-[var(--alx-text-strong)]">No featured opportunities yet</div>
+                <p className="text-sm leading-7 text-[var(--alx-text-muted)]">
+                  Once an admin publishes featured opportunities, they will appear here automatically.
+                </p>
+              </GlassCard>
+            )}
           </div>
         </div>
       </section>
