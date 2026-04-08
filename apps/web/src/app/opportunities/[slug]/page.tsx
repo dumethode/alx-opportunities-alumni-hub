@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 
 import { SaveOpportunityButton, ShareOpportunityButton } from "@/components/actions";
@@ -8,6 +9,78 @@ import { api } from "@/lib/api";
 import { resolveAssetUrl } from "@/lib/client-api";
 
 const fallbackOpportunityImage = "/media/placeholders/opportunity-default.jpg";
+
+function getSiteUrl() {
+  return (
+    process.env.NEXT_PUBLIC_SITE_URL ??
+    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000")
+  );
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const siteUrl = getSiteUrl();
+  const { slug } = await params;
+
+  try {
+    const data = await api.getOpportunity(slug);
+    const opportunity = data.item as any;
+    const title = `${opportunity.title} | ALX Opportunities`;
+    const description =
+      opportunity.excerpt ||
+      `View details and apply for ${opportunity.title} on the ALX Opportunities & Alumni Hub.`;
+    const absoluteImage =
+      resolveAssetUrl(opportunity.image_url) ??
+      new URL(fallbackOpportunityImage, siteUrl).toString();
+
+    return {
+      title,
+      description,
+      alternates: { canonical: `/opportunities/${slug}` },
+      openGraph: {
+        type: "article",
+        url: `/opportunities/${slug}`,
+        title,
+        description,
+        siteName: "ALX Opportunities & Alumni Hub",
+        images: [
+          {
+            url: absoluteImage,
+            alt: opportunity.title,
+          },
+        ],
+      },
+      twitter: {
+        card: "summary_large_image",
+        title,
+        description,
+        images: [absoluteImage],
+      },
+    };
+  } catch {
+    const title = "Opportunity | ALX Opportunities";
+    const description = "View opportunity details on the ALX Opportunities & Alumni Hub.";
+    const absoluteImage = new URL(fallbackOpportunityImage, siteUrl).toString();
+    return {
+      title,
+      description,
+      openGraph: {
+        title,
+        description,
+        images: [{ url: absoluteImage }],
+      },
+      twitter: {
+        card: "summary_large_image",
+        title,
+        description,
+        images: [absoluteImage],
+      },
+    };
+  }
+}
 
 export default async function OpportunityDetailPage({
   params,
