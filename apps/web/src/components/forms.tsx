@@ -1,11 +1,14 @@
 "use client";
 
+import { Sparkles, Wand2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useRef, useState } from "react";
 
 import { API_BASE_URL, clientApi, setStoredAccessToken } from "@/lib/client-api";
 
 type ResumeEntry = { [key: string]: string };
+type AiMode = "resume" | "cover-letter" | "tracker";
+type AiFields = Record<string, string>;
 
 function fieldClass() {
   return "w-full rounded-2xl border border-[color:var(--alx-border)] bg-[var(--alx-panel)] px-4 py-3 text-[var(--alx-text-strong)] shadow-[0_10px_24px_rgba(4,27,110,0.06)] placeholder:text-[var(--alx-text-soft)] focus:outline-none focus:ring-4 focus:ring-[rgba(18,91,255,0.18)]";
@@ -30,8 +33,8 @@ function GuidePanel({
   items: string[];
 }) {
   return (
-    <div className="rounded-3xl border border-white/10 bg-white/5 px-4 py-4 text-sm leading-7 text-slate-300">
-      <div className="font-semibold text-white">{title}</div>
+    <div className="rounded-3xl border border-[color:var(--alx-border)] bg-[var(--alx-panel-muted)] px-4 py-4 text-sm leading-7 text-[var(--alx-text-muted)]">
+      <div className="font-semibold text-[var(--alx-text-strong)]">{title}</div>
       <div className="mt-2 space-y-1">
         {items.map((item) => (
           <div key={item}>{item}</div>
@@ -82,6 +85,117 @@ function CoverLetterTemplatePreview() {
         <div className="mt-6">Sincerely,</div>
         <div className="mt-4 font-semibold">Full Name</div>
       </div>
+    </div>
+  );
+}
+
+function formFields(form: HTMLFormElement | null) {
+  if (!form) return {};
+  const data = new FormData(form);
+  return Object.fromEntries(Array.from(data.entries()).map(([key, value]) => [key, String(value)]));
+}
+
+function fillNamedField(form: HTMLFormElement | null, name: string, value?: string) {
+  if (!form || typeof value !== "string") return;
+  const field = form.elements.namedItem(name);
+  if (!(field instanceof HTMLInputElement || field instanceof HTMLTextAreaElement || field instanceof HTMLSelectElement)) {
+    return;
+  }
+  field.value = value;
+  field.dispatchEvent(new Event("input", { bubbles: true }));
+  field.dispatchEvent(new Event("change", { bubbles: true }));
+}
+
+export function AiAssistantPanel({
+  mode,
+  currentFields,
+  onApply,
+}: {
+  mode: AiMode;
+  currentFields: () => Record<string, string>;
+  onApply: (fields: AiFields) => void;
+}) {
+  const [prompt, setPrompt] = useState("");
+  const [reply, setReply] = useState<string | null>(null);
+  const [fields, setFields] = useState<AiFields | null>(null);
+  const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
+
+  async function askAssistant() {
+    setStatus("loading");
+    setReply(null);
+    setFields(null);
+    try {
+      const response = await clientApi<{ reply: string; fields: AiFields }>("/ai/assist", {
+        method: "POST",
+        bodyJson: {
+          mode,
+          prompt,
+          current_fields: currentFields(),
+        },
+      });
+      setReply(response.reply);
+      setFields(response.fields);
+      setStatus("idle");
+    } catch (error) {
+      setReply(error instanceof Error ? error.message : "Assistant could not prepare a draft.");
+      setStatus("error");
+    }
+  }
+
+  return (
+    <div className="rounded-3xl border border-[color:var(--alx-border)] bg-[var(--alx-panel-muted)] p-4 shadow-[0_14px_34px_rgba(4,27,110,0.08)]">
+      <div className="flex items-center gap-2 text-sm font-semibold text-[var(--alx-text-strong)]">
+        <Sparkles className="h-4 w-4 text-[var(--alx-accent-text)]" />
+        AI drafting assistant
+      </div>
+      <div className="mt-3 grid gap-3">
+        <textarea
+          value={prompt}
+          onChange={(event) => setPrompt(event.target.value)}
+          rows={4}
+          placeholder="Paste your notes, target role, achievements, job description, or application context."
+          className="w-full rounded-2xl border border-[color:var(--alx-border)] bg-[var(--alx-panel)] px-4 py-3 text-sm text-[var(--alx-text-strong)] placeholder:text-[var(--alx-text-soft)] focus:outline-none focus:ring-4 focus:ring-[rgba(18,91,255,0.16)]"
+        />
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+          <button
+            type="button"
+            onClick={askAssistant}
+            disabled={status === "loading" || !prompt.trim()}
+            className="alx-btn alx-btn-primary inline-flex items-center justify-center gap-2 rounded-2xl px-4 py-3 text-sm font-semibold disabled:pointer-events-none disabled:opacity-60"
+          >
+            <Wand2 className="h-4 w-4" />
+            {status === "loading" ? "Drafting..." : "Draft with AI"}
+          </button>
+          {fields ? (
+            <button
+              type="button"
+              onClick={() => onApply(fields)}
+              className="alx-btn alx-btn-secondary inline-flex items-center justify-center rounded-2xl px-4 py-3 text-sm font-semibold"
+            >
+              Apply to form
+            </button>
+          ) : null}
+        </div>
+      </div>
+      {reply ? (
+        <div className={`mt-3 rounded-2xl border px-4 py-3 text-sm leading-7 ${
+          status === "error"
+            ? "border-red-400/25 bg-red-500/10 text-red-200"
+            : "border-[color:var(--alx-border)] bg-[var(--alx-panel)] text-[var(--alx-text-muted)]"
+        }`}>
+          {reply}
+        </div>
+      ) : null}
+      {fields ? (
+        <div className="mt-3 grid gap-2">
+          {Object.entries(fields).map(([key, value]) => (
+            <div key={key} className="rounded-2xl border border-[color:var(--alx-border)] bg-[var(--alx-panel)] px-4 py-3">
+              <div className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--alx-accent-text)]">{key.replaceAll("_", " ")}</div>
+              <div className="mt-2 whitespace-pre-line text-sm leading-7 text-[var(--alx-text-muted)]">{value}</div>
+            </div>
+          ))}
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -276,15 +390,15 @@ function DynamicList({
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <div className="text-lg font-semibold text-white">{title}</div>
-        <button type="button" onClick={add} className="rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-white transition hover:bg-white/15 active:scale-[0.98]">
+        <div className="text-lg font-semibold text-[var(--alx-text-strong)]">{title}</div>
+        <button type="button" onClick={add} className="alx-btn alx-btn-secondary rounded-2xl px-4 py-2 text-sm">
           Add More
         </button>
       </div>
       {items.map((item, index) => (
-        <div key={`${title}-${index}`} className="space-y-3 rounded-3xl border border-white/10 bg-white/5 p-4">
+        <div key={`${title}-${index}`} className="space-y-3 rounded-3xl border border-[color:var(--alx-border)] bg-[var(--alx-panel-muted)] p-4">
           <div className="flex items-center justify-between">
-            <div className="text-sm font-medium text-cyan-100">{title} {index + 1}</div>
+            <div className="text-sm font-medium text-[var(--alx-accent-text)]">{title} {index + 1}</div>
             {items.length > 1 ? (
               <button type="button" onClick={() => remove(index)} className="text-sm text-red-200">
                 Remove
@@ -300,7 +414,7 @@ function DynamicList({
                   onChange={(event) => update(index, field.key, event.target.value)}
                   placeholder={field.label}
                   rows={4}
-                  className="w-full rounded-3xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white md:col-span-2"
+                  className="w-full rounded-3xl border border-[color:var(--alx-border)] bg-[var(--alx-panel)] px-4 py-3 text-[var(--alx-text-strong)] placeholder:text-[var(--alx-text-soft)] md:col-span-2"
                 />
               ) : (
                 <input
@@ -321,6 +435,7 @@ function DynamicList({
 
 function ResumeBuilderForm() {
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const formRef = useRef<HTMLFormElement | null>(null);
   const [experience, setExperience] = useState<ResumeEntry[]>([{ role: "", company: "", from: "", until: "", location: "", highlights: "" }]);
   const [education, setEducation] = useState<ResumeEntry[]>([{ school: "", award: "", from: "", until: "", location: "" }]);
   const [certifications, setCertifications] = useState<ResumeEntry[]>([{ name: "", issuer: "", year: "" }]);
@@ -372,8 +487,20 @@ function ResumeBuilderForm() {
     }
   }
 
+  function applyAiDraft(fields: AiFields) {
+    fillNamedField(formRef.current, "headline", fields.headline);
+    fillNamedField(formRef.current, "summary", fields.summary);
+    if (fields.highlights) {
+      setExperience((current) => {
+        const next = current.length ? [...current] : [{ role: "", company: "", from: "", until: "", location: "", highlights: "" }];
+        next[0] = { ...next[0], highlights: fields.highlights };
+        return next;
+      });
+    }
+  }
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-5">
+    <form ref={formRef} onSubmit={handleSubmit} className="space-y-5">
       <div className="grid gap-5 xl:grid-cols-[1.1fr_0.9fr]">
         <GuidePanel
           title="How to fill the resume template"
@@ -387,6 +514,7 @@ function ResumeBuilderForm() {
         />
         <ResumeTemplatePreview />
       </div>
+      <AiAssistantPanel mode="resume" currentFields={() => formFields(formRef.current)} onApply={applyAiDraft} />
       <div className="grid gap-4 md:grid-cols-2">
         <input name="full_name" placeholder="Full name" required className={fieldClass()} />
         <input name="email" placeholder="Email" type="email" required className={fieldClass()} />
@@ -400,7 +528,7 @@ function ResumeBuilderForm() {
         <input name="github_url" placeholder="GitHub URL" className={fieldClass()} />
       </div>
       <input name="headline" placeholder="Professional headline" required className={fieldClass()} />
-      <textarea name="summary" rows={4} placeholder="Professional summary" required className="w-full rounded-3xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white" />
+      <textarea name="summary" rows={4} placeholder="Professional summary" required className="w-full rounded-3xl border border-[color:var(--alx-border)] bg-[var(--alx-panel)] px-4 py-3 text-[var(--alx-text-strong)] placeholder:text-[var(--alx-text-soft)]" />
       <DynamicList title="Work Experience" items={experience} setItems={setExperience} fields={[
         { key: "role", label: "Role" },
         { key: "company", label: "Company" },
@@ -440,7 +568,7 @@ function ResumeBuilderForm() {
       ]} />
       {status === "success" ? <div className="rounded-2xl border border-emerald-400/20 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-200">Your resume has been generated and downloaded.</div> : null}
       {status === "error" ? <div className="rounded-2xl border border-red-400/20 bg-red-500/10 px-4 py-3 text-sm text-red-200">Resume generation failed. Please try again.</div> : null}
-      <button disabled={status === "loading"} className="rounded-2xl bg-white px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-slate-100 active:scale-[0.98] disabled:opacity-70 disabled:pointer-events-none">
+      <button disabled={status === "loading"} className="alx-btn alx-btn-primary w-full rounded-2xl px-5 py-3 text-sm font-semibold disabled:opacity-70 disabled:pointer-events-none sm:w-auto">
         {status === "loading" ? "Generating..." : "Generate resume"}
       </button>
     </form>
@@ -449,6 +577,7 @@ function ResumeBuilderForm() {
 
 function CoverLetterBuilderForm() {
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const formRef = useRef<HTMLFormElement | null>(null);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -493,8 +622,14 @@ function CoverLetterBuilderForm() {
     }
   }
 
+  function applyAiDraft(fields: AiFields) {
+    ["intro", "body_1", "body_2", "body_3", "closing"].forEach((name) => {
+      fillNamedField(formRef.current, name, fields[name]);
+    });
+  }
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form ref={formRef} onSubmit={handleSubmit} className="space-y-4">
       <div className="grid gap-5 xl:grid-cols-[1.1fr_0.9fr]">
         <GuidePanel
           title="How to fill the cover letter template"
@@ -508,6 +643,7 @@ function CoverLetterBuilderForm() {
         />
         <CoverLetterTemplatePreview />
       </div>
+      <AiAssistantPanel mode="cover-letter" currentFields={() => formFields(formRef.current)} onApply={applyAiDraft} />
       <div className="grid gap-4 md:grid-cols-2">
         <input name="full_name" placeholder="Full name" required className={fieldClass()} />
         <input name="email" placeholder="Email" type="email" required className={fieldClass()} />
@@ -530,14 +666,14 @@ function CoverLetterBuilderForm() {
         <input name="recipient_location" placeholder="Company location" className={fieldClass()} />
       </div>
       <input name="role_title" placeholder="Role title or subject" required className={fieldClass()} />
-      <textarea name="intro" rows={3} placeholder="Opening paragraph" required className="w-full rounded-3xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white" />
-      <textarea name="body_1" rows={3} placeholder="Body paragraph one" required className="w-full rounded-3xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white" />
-      <textarea name="body_2" rows={3} placeholder="Body paragraph two" required className="w-full rounded-3xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white" />
-      <textarea name="body_3" rows={3} placeholder="Optional body paragraph three" className="w-full rounded-3xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white" />
-      <textarea name="closing" rows={2} placeholder="Closing paragraph and signature" required className="w-full rounded-3xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white" />
+      <textarea name="intro" rows={3} placeholder="Opening paragraph" required className="w-full rounded-3xl border border-[color:var(--alx-border)] bg-[var(--alx-panel)] px-4 py-3 text-[var(--alx-text-strong)] placeholder:text-[var(--alx-text-soft)]" />
+      <textarea name="body_1" rows={3} placeholder="Body paragraph one" required className="w-full rounded-3xl border border-[color:var(--alx-border)] bg-[var(--alx-panel)] px-4 py-3 text-[var(--alx-text-strong)] placeholder:text-[var(--alx-text-soft)]" />
+      <textarea name="body_2" rows={3} placeholder="Body paragraph two" required className="w-full rounded-3xl border border-[color:var(--alx-border)] bg-[var(--alx-panel)] px-4 py-3 text-[var(--alx-text-strong)] placeholder:text-[var(--alx-text-soft)]" />
+      <textarea name="body_3" rows={3} placeholder="Optional body paragraph three" className="w-full rounded-3xl border border-[color:var(--alx-border)] bg-[var(--alx-panel)] px-4 py-3 text-[var(--alx-text-strong)] placeholder:text-[var(--alx-text-soft)]" />
+      <textarea name="closing" rows={2} placeholder="Closing paragraph and signature" required className="w-full rounded-3xl border border-[color:var(--alx-border)] bg-[var(--alx-panel)] px-4 py-3 text-[var(--alx-text-strong)] placeholder:text-[var(--alx-text-soft)]" />
       {status === "success" ? <div className="rounded-2xl border border-emerald-400/20 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-200">Your cover letter has been generated and downloaded.</div> : null}
       {status === "error" ? <div className="rounded-2xl border border-red-400/20 bg-red-500/10 px-4 py-3 text-sm text-red-200">Cover letter generation failed. Please try again.</div> : null}
-      <button disabled={status === "loading"} className="rounded-2xl bg-white px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-slate-100 active:scale-[0.98] disabled:opacity-70 disabled:pointer-events-none">
+      <button disabled={status === "loading"} className="alx-btn alx-btn-primary w-full rounded-2xl px-5 py-3 text-sm font-semibold disabled:opacity-70 disabled:pointer-events-none sm:w-auto">
         {status === "loading" ? "Generating..." : "Generate cover letter"}
       </button>
     </form>

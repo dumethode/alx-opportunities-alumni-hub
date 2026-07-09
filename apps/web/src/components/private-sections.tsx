@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { FormEvent, useEffect, useRef, useState } from "react";
 
-import { DocumentBuilder } from "@/components/forms";
+import { AiAssistantPanel, DocumentBuilder } from "@/components/forms";
 import { SafeImage } from "@/components/safe-image";
 import { API_BASE_URL, clientApi, getStoredAccessToken, resolveAssetUrl } from "@/lib/client-api";
 
@@ -99,13 +99,13 @@ export function DashboardSection() {
 export function ResourceSection() {
   return (
     <RequireAuth title="Resources">
-      <div className="grid gap-8 lg:grid-cols-2">
-        <div id="resume-builder" className="rounded-[28px] border border-white/10 bg-white/5 p-6">
-          <div className="mb-5 text-xl font-semibold text-white">Resume Template Builder</div>
+      <div className="grid gap-6 lg:grid-cols-2">
+        <div id="resume-builder" className="rounded-[28px] border border-[color:var(--alx-border)] bg-[var(--alx-panel)] p-4 shadow-[0_18px_48px_rgba(4,27,110,0.08)] sm:p-6">
+          <div className="mb-5 text-xl font-semibold text-[var(--alx-text-strong)]">Resume Template Builder</div>
           <DocumentBuilder type="resume" />
         </div>
-        <div id="cover-letter-builder" className="rounded-[28px] border border-white/10 bg-white/5 p-6">
-          <div className="mb-5 text-xl font-semibold text-white">Cover Letter Builder</div>
+        <div id="cover-letter-builder" className="rounded-[28px] border border-[color:var(--alx-border)] bg-[var(--alx-panel)] p-4 shadow-[0_18px_48px_rgba(4,27,110,0.08)] sm:p-6">
+          <div className="mb-5 text-xl font-semibold text-[var(--alx-text-strong)]">Cover Letter Builder</div>
           <DocumentBuilder type="cover-letter" />
         </div>
       </div>
@@ -1070,6 +1070,7 @@ export function AdminSection() {
 export function TrackerSection() {
   const [items, setItems] = useState<any[]>([]);
   const [message, setMessage] = useState<string | null>(null);
+  const formRef = useRef<HTMLFormElement | null>(null);
 
   useEffect(() => {
     clientApi<{ items: any[] }>("/tracker").then((data) => setItems(data.items)).catch(() => setItems([]));
@@ -1104,46 +1105,64 @@ export function TrackerSection() {
     }
   }
 
+  function currentTrackerFields() {
+    if (!formRef.current) return {};
+    return Object.fromEntries(Array.from(new FormData(formRef.current).entries()).map(([key, value]) => [key, String(value)]));
+  }
+
+  function applyTrackerDraft(fields: Record<string, string>) {
+    if (!formRef.current) return;
+    Object.entries(fields).forEach(([name, value]) => {
+      const field = formRef.current?.elements.namedItem(name);
+      if (field instanceof HTMLInputElement || field instanceof HTMLTextAreaElement || field instanceof HTMLSelectElement) {
+        field.value = value;
+        field.dispatchEvent(new Event("input", { bubbles: true }));
+        field.dispatchEvent(new Event("change", { bubbles: true }));
+      }
+    });
+  }
+
   return (
     <RequireAuth title="Tracker">
-      <div className="grid gap-8 xl:grid-cols-[0.9fr_1.1fr]">
-        <form onSubmit={handleSubmit} className="rounded-[28px] border border-white/10 bg-white/5 p-6 space-y-4">
-          <div className="text-xl font-semibold text-white">Add tracker entry</div>
+      <div className="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
+        <form ref={formRef} onSubmit={handleSubmit} className="space-y-4 rounded-[28px] border border-[color:var(--alx-border)] bg-[var(--alx-panel)] p-4 shadow-[0_18px_48px_rgba(4,27,110,0.08)] sm:p-6">
+          <div className="text-xl font-semibold text-[var(--alx-text-strong)]">Add tracker entry</div>
+          <AiAssistantPanel mode="tracker" currentFields={currentTrackerFields} onApply={applyTrackerDraft} />
           <div className="grid gap-4 md:grid-cols-2">
-            <input name="title" placeholder="Opportunity title" required className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white" />
-            <input name="organization" placeholder="Organization" required className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white" />
+            <input name="title" placeholder="Opportunity title" required className="w-full rounded-2xl border border-[color:var(--alx-border)] bg-[var(--alx-panel-muted)] px-4 py-3 text-[var(--alx-text-strong)] placeholder:text-[var(--alx-text-soft)]" />
+            <input name="organization" placeholder="Organization" required className="w-full rounded-2xl border border-[color:var(--alx-border)] bg-[var(--alx-panel-muted)] px-4 py-3 text-[var(--alx-text-strong)] placeholder:text-[var(--alx-text-soft)]" />
           </div>
           <div className="grid gap-4 md:grid-cols-2">
-            <input name="category" placeholder="Category" required className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white" />
-            <input name="status" placeholder="Status" required className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white" />
+            <input name="category" placeholder="Category" required className="w-full rounded-2xl border border-[color:var(--alx-border)] bg-[var(--alx-panel-muted)] px-4 py-3 text-[var(--alx-text-strong)] placeholder:text-[var(--alx-text-soft)]" />
+            <input name="status" placeholder="Status" required className="w-full rounded-2xl border border-[color:var(--alx-border)] bg-[var(--alx-panel-muted)] px-4 py-3 text-[var(--alx-text-strong)] placeholder:text-[var(--alx-text-soft)]" />
           </div>
           <div className="grid gap-4 md:grid-cols-2">
-            <input name="date_applied" type="datetime-local" className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white" />
-            <input name="deadline" type="datetime-local" className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white" />
+            <input name="date_applied" type="datetime-local" className="w-full rounded-2xl border border-[color:var(--alx-border)] bg-[var(--alx-panel-muted)] px-4 py-3 text-[var(--alx-text-strong)]" />
+            <input name="deadline" type="datetime-local" className="w-full rounded-2xl border border-[color:var(--alx-border)] bg-[var(--alx-panel-muted)] px-4 py-3 text-[var(--alx-text-strong)]" />
           </div>
           <div className="grid gap-4 md:grid-cols-2">
-            <input name="follow_up_date" type="datetime-local" className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white" />
-            <input name="interview_date" type="datetime-local" className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white" />
+            <input name="follow_up_date" type="datetime-local" className="w-full rounded-2xl border border-[color:var(--alx-border)] bg-[var(--alx-panel-muted)] px-4 py-3 text-[var(--alx-text-strong)]" />
+            <input name="interview_date" type="datetime-local" className="w-full rounded-2xl border border-[color:var(--alx-border)] bg-[var(--alx-panel-muted)] px-4 py-3 text-[var(--alx-text-strong)]" />
           </div>
-          <input name="result" placeholder="Result" className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white" />
-          <textarea name="notes" rows={4} placeholder="Notes" className="w-full rounded-3xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white" />
-          {message ? <div className="rounded-2xl border border-cyan-300/15 bg-cyan-400/8 px-4 py-3 text-sm text-cyan-50">{message}</div> : null}
-          <button className="rounded-2xl bg-white px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-slate-100 active:scale-[0.98]">Save tracker entry</button>
+          <input name="result" placeholder="Result" className="w-full rounded-2xl border border-[color:var(--alx-border)] bg-[var(--alx-panel-muted)] px-4 py-3 text-[var(--alx-text-strong)] placeholder:text-[var(--alx-text-soft)]" />
+          <textarea name="notes" rows={4} placeholder="Notes" className="w-full rounded-3xl border border-[color:var(--alx-border)] bg-[var(--alx-panel-muted)] px-4 py-3 text-[var(--alx-text-strong)] placeholder:text-[var(--alx-text-soft)]" />
+          {message ? <div className="rounded-2xl border border-cyan-300/20 bg-cyan-400/10 px-4 py-3 text-sm text-[var(--alx-text-strong)]">{message}</div> : null}
+          <button className="alx-btn alx-btn-primary w-full rounded-2xl px-5 py-3 text-sm font-semibold sm:w-auto">Save tracker entry</button>
         </form>
         <div className="space-y-4">
           {items.length ? items.map((item) => (
-            <div key={item.id} className="rounded-[28px] border border-white/10 bg-white/5 p-5">
-              <div className="flex items-start justify-between gap-4">
+            <div key={item.id} className="rounded-[28px] border border-[color:var(--alx-border)] bg-[var(--alx-panel)] p-5 shadow-[0_14px_34px_rgba(4,27,110,0.08)]">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                 <div>
-                  <div className="text-lg font-semibold text-white">{item.title}</div>
-                  <div className="text-sm text-cyan-100">{item.organization}</div>
+                  <div className="text-lg font-semibold text-[var(--alx-text-strong)]">{item.title}</div>
+                  <div className="text-sm text-[var(--alx-accent-text)]">{item.organization}</div>
                 </div>
-                <div className="rounded-full border border-white/10 px-3 py-1 text-xs text-slate-300">{item.status}</div>
+                <div className="w-fit rounded-full border border-[color:var(--alx-border)] bg-[var(--alx-pill)] px-3 py-1 text-xs text-[var(--alx-text-muted)]">{item.status}</div>
               </div>
-              <div className="mt-3 text-sm leading-7 text-slate-300">{item.notes || "No notes added yet."}</div>
+              <div className="mt-3 text-sm leading-7 text-[var(--alx-text-muted)]">{item.notes || "No notes added yet."}</div>
             </div>
           )) : (
-            <div className="rounded-[28px] border border-white/10 bg-white/5 p-6 text-slate-300">
+            <div className="rounded-[28px] border border-[color:var(--alx-border)] bg-[var(--alx-panel)] p-6 text-[var(--alx-text-muted)]">
               No tracker entries yet. Add your first application to start following deadlines and progress.
             </div>
           )}

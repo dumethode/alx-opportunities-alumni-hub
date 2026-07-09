@@ -10,9 +10,9 @@ export default function ResourcesPage() {
         description="The document builders are structured for real use and keep privacy visible near the download flow."
       />
       <div className="grid gap-4 md:grid-cols-3">
-        <a href="#resume-builder" className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-slate-200 transition hover:bg-white/10">Resume builder</a>
-        <a href="#cover-letter-builder" className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-slate-200 transition hover:bg-white/10">Cover letter builder</a>
-        <a href="/tracker" className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-slate-200 transition hover:bg-white/10">Opportunity tracker</a>
+        <a href="#resume-builder" className="alx-btn alx-btn-secondary rounded-2xl px-4 py-3 text-sm font-semibold">Resume builder</a>
+        <a href="#cover-letter-builder" className="alx-btn alx-btn-secondary rounded-2xl px-4 py-3 text-sm font-semibold">Cover letter builder</a>
+        <a href="/tracker" className="alx-btn alx-btn-secondary rounded-2xl px-4 py-3 text-sm font-semibold">Opportunity tracker</a>
       </div>
       <ResourceSection />
     </div>

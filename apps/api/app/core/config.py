@@ -21,6 +21,8 @@ class Settings(BaseSettings):
     supabase_opportunities_bucket: str = "opportunity-images"
     seed_admin_email: str = "admin@alxafrica.com"
     seed_admin_password: str = "Admin123!"
+    openai_api_key: str | None = None
+    openai_model: str = "gpt-4o-mini"
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 

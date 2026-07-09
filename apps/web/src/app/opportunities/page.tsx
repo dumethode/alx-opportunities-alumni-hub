@@ -35,29 +35,27 @@ export default async function OpportunitiesPage({
         description="Newest opportunities appear first. Members can save them and connect them to their tracker."
       />
       <GlassCard className="space-y-4">
-        <div className="text-sm leading-7 text-slate-300">
+        <div className="text-sm leading-7 text-[var(--alx-text-muted)]">
           Featured listings are reviewed for clarity and legitimacy before they are promoted in the hub.
         </div>
-        <div className="overflow-x-auto">
-          <div className="flex min-w-max gap-3">
-            {categories.map((category) => {
-              const href = category.slug ? `/opportunities?category=${category.slug}` : "/opportunities";
-              const active = activeCategory === category.slug;
-              return (
-                <Link
-                  key={category.label}
-                  href={href}
-                  className={`rounded-full px-4 py-2 text-sm transition ${
-                    active
-                      ? "bg-[var(--alx-cta)] font-semibold text-[var(--alx-cta-text)]"
-                      : "border border-[color:var(--alx-border)] bg-[var(--alx-panel)] text-[var(--alx-text-muted)] hover:text-[var(--alx-text-strong)]"
-                  }`}
-                >
-                  {category.label}
-                </Link>
-              );
-            })}
-          </div>
+        <div className="flex flex-wrap gap-3">
+          {categories.map((category) => {
+            const href = category.slug ? `/opportunities?category=${category.slug}` : "/opportunities";
+            const active = activeCategory === category.slug;
+            return (
+              <Link
+                key={category.label}
+                href={href}
+                className={`rounded-full px-4 py-2 text-sm transition ${
+                  active
+                    ? "bg-[var(--alx-cta)] font-semibold text-[var(--alx-cta-text)]"
+                    : "border border-[color:var(--alx-border)] bg-[var(--alx-panel)] text-[var(--alx-text-muted)] hover:text-[var(--alx-text-strong)]"
+                }`}
+              >
+                {category.label}
+              </Link>
+            );
+          })}
         </div>
       </GlassCard>
       <div className="grid gap-6 lg:grid-cols-3">
@@ -66,7 +64,7 @@ export default async function OpportunitiesPage({
         ))}
       </div>
       {opportunities.items.length === 0 ? (
-        <GlassCard className="text-center text-slate-300">
+        <GlassCard className="text-center text-[var(--alx-text-muted)]">
           No opportunities matched the current filters.
         </GlassCard>
       ) : null}
